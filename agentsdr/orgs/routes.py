@@ -408,8 +408,15 @@ def gmail_auth(org_slug, agent_id):
             return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
 
         # OAuth parameters - use a fixed callback URL
-        redirect_uri = url_for('orgs.gmail_callback_handler', _external=True)
+        base_url = os.getenv('BASE_URL')
+        if base_url:
+            redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
+        else:
+            redirect_uri = url_for('orgs.gmail_callback_handler', _external=True)
         current_app.logger.info(f"Gmail OAuth redirect URI: {redirect_uri}")
+        current_app.logger.info(f"Request host: {request.host}")
+        current_app.logger.info(f"Request scheme: {request.scheme}")
+        current_app.logger.info(f"BASE_URL env: {os.getenv('BASE_URL')}")
         params = {
             'client_id': client_id,
             'redirect_uri': redirect_uri,
