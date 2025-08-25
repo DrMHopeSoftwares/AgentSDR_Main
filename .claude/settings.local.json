@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/c:\\Users\\hope4\\Pictures/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

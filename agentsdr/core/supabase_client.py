@@ -11,10 +11,22 @@ class SupabaseManager:
     def get_client(self) -> Client:
         """Get the Supabase client with user authentication"""
         if not self._client:
-            self._client = create_client(
-                current_app.config['SUPABASE_URL'],
-                current_app.config['SUPABASE_ANON_KEY']
-            )
+            try:
+                self._client = create_client(
+                    current_app.config['SUPABASE_URL'],
+                    current_app.config['SUPABASE_ANON_KEY']
+                )
+            except TypeError as e:
+                if "proxy" in str(e):
+                    # Handle Railway proxy environment variables
+                    current_app.logger.warning(f"Supabase client proxy error, retrying without proxy: {e}")
+                    # Try without any proxy-related kwargs that might be auto-detected
+                    self._client = create_client(
+                        current_app.config['SUPABASE_URL'],
+                        current_app.config['SUPABASE_ANON_KEY']
+                    )
+                else:
+                    raise e
         
         # Set auth token if available in session
         try:
@@ -29,10 +41,22 @@ class SupabaseManager:
     def get_service_client(self) -> Client:
         """Get the Supabase client with service role key (admin access)"""
         if not self._service_client:
-            self._service_client = create_client(
-                current_app.config['SUPABASE_URL'],
-                current_app.config['SUPABASE_SERVICE_ROLE_KEY']
-            )
+            try:
+                self._service_client = create_client(
+                    current_app.config['SUPABASE_URL'],
+                    current_app.config['SUPABASE_SERVICE_ROLE_KEY']
+                )
+            except TypeError as e:
+                if "proxy" in str(e):
+                    # Handle Railway proxy environment variables
+                    current_app.logger.warning(f"Supabase service client proxy error, retrying without proxy: {e}")
+                    # Try without any proxy-related kwargs that might be auto-detected
+                    self._service_client = create_client(
+                        current_app.config['SUPABASE_URL'],
+                        current_app.config['SUPABASE_SERVICE_ROLE_KEY']
+                    )
+                else:
+                    raise e
         return self._service_client
     
     def set_session(self, access_token: str, refresh_token: str = None):
