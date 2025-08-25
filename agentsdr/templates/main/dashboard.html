@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - AgentSDR{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Enhanced Welcome Section -->
+    <div class="card-gradient rounded-xl shadow-lg overflow-hidden">
+        <div class="px-6 py-8 sm:p-8 relative">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <span class="text-2xl">👋</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-white">
+                        Welcome back, {{ current_user.display_name or current_user.email }}!
+                    </h3>
+                    <p class="mt-2 text-white/90 text-lg">
+                        Manage your organizations and data from your personal dashboard.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute top-4 right-4 text-white/10 text-6xl float-up">⭐</div>
+        </div>
+    </div>
+
+    <!-- Organizations Section -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg leading-6 font-medium text-secondary-900">
+                    Your Organizations
+                </h3>
+                <a href="{{ url_for('orgs.create_organization') }}" class="btn btn-primary">
+                    Create Organization
+                </a>
+            </div>
+            
+            {% if organizations %}
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 reveal-list">
+                {% for org_data in organizations %}
+                <div class="card bg-white rounded-xl shadow-lg border-0 overflow-hidden hover:shadow-2xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">{{ org_data.org.name[0].upper() }}</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-gray-900">{{ org_data.org.name }}</h4>
+                                    <p class="text-sm text-gray-500">{{ org_data.org.slug }}</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                       {% if org_data.role == 'admin' %}bg-gradient-to-r from-blue-500 to-purple-600 text-white{% else %}bg-gradient-to-r from-green-500 to-teal-600 text-white{% endif %}">
+                                {{ org_data.role.title() }}
+                            </span>
+                        </div>
+                        <div class="flex space-x-3">
+                            {% if org_data.role == 'admin' %}
+                            <a href="{{ url_for('orgs.list_members', org_slug=org_data.org.slug) }}"
+                               class="w-full text-center py-2 px-4 rounded-lg font-semibold text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300 hover:scale-105">
+                                👥 Manage Organization
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <svg class="mx-auto h-12 w-12 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-secondary-900">No organizations</h3>
+                <p class="mt-1 text-sm text-secondary-500">Get started by creating your first organization.</p>
+                <div class="mt-6">
+                    <a href="{{ url_for('orgs.create_organization') }}" class="btn btn-primary">
+                        Create Organization
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Records Section -->
+    {% if recent_records %}
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-secondary-900 mb-4">
+                Recent Records
+            </h3>
+            <div class="space-y-4">
+                {% for record in recent_records %}
+                <div class="border border-secondary-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-secondary-900">{{ record.title }}</h4>
+                            <p class="text-sm text-secondary-500 mt-1">{{ record.content[:100] }}{% if record.content|length > 100 %}...{% endif %}</p>
+                        </div>
+                        <div class="text-sm text-secondary-500">
+                            {{ record.created_at.split('T')[0] }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-secondary-900 mb-4">
+                Quick Actions
+            </h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <a href="{{ url_for('orgs.create_organization') }}" 
+                   class="relative rounded-lg border border-secondary-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-secondary-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="absolute inset-0" aria-hidden="true"></span>
+                        <p class="text-sm font-medium text-secondary-900">Create Organization</p>
+                        <p class="text-sm text-secondary-500">Start a new organization</p>
+                    </div>
+                </a>
+
+                {% if current_user.is_super_admin %}
+                <a href="{{ url_for('admin.dashboard') }}" 
+                   class="relative rounded-lg border border-secondary-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-secondary-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="absolute inset-0" aria-hidden="true"></span>
+                        <p class="text-sm font-medium text-secondary-900">Admin Panel</p>
+                        <p class="text-sm text-secondary-500">Manage platform</p>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

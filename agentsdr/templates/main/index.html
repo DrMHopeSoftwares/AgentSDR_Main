@@ -1,0 +1,275 @@
+{% extends "layout.html" %}
+
+{% block title %}AgentSDR - Multi-tenant Organization Management{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <!-- Enhanced Hero Section with Particles -->
+    <div class="relative overflow-hidden hero-gradient min-h-screen flex items-center">
+        <!-- Animated Background Particles -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="particles-container">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+        </div>
+        
+        <!-- Floating Geometric Shapes -->
+        <div class="absolute inset-0">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto relative z-10 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center px-4 sm:px-6 lg:px-8 py-20">
+                <!-- Hero Content -->
+                <div class="text-center lg:text-left">
+                    <div class="hero-content-slide-in">
+                        <h1 class="text-5xl sm:text-6xl lg:text-7xl tracking-tight font-extrabold text-white leading-tight">
+                            <span class="block animate-fade-in-up">Organize your</span>
+                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 animate-fade-in-up" style="animation-delay: 300ms;">business data</span>
+                            <span class="block text-3xl sm:text-4xl lg:text-5xl text-white/80 font-light mt-2 animate-fade-in-up" style="animation-delay: 600ms;">like never before</span>
+                        </h1>
+                        
+                        <p class="mt-6 text-lg sm:text-xl text-white/90 max-w-3xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up" style="animation-delay: 900ms;">
+                            Experience the future of organization management with AgentSDR's powerful multi-tenant platform featuring enterprise-grade security, intelligent automation, and seamless team collaboration.
+                        </p>
+                        
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style="animation-delay: 1200ms;">
+                            <a href="{{ url_for('auth.signup') }}" class="group btn-gradient-enhanced pulse-glow px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transform hover:scale-105 hover:-translate-y-1 transition-all duration-300">
+                                <span class="flex items-center justify-center">
+                                    <span class="mr-2">🚀</span>
+                                    Start Free Trial
+                                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="px-8 py-4 border-2 border-white/30 text-lg font-semibold rounded-xl text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-white/50">
+                                Sign In
+                            </a>
+                        </div>
+
+                        <!-- Trust Indicators -->
+                        <div class="mt-12 animate-fade-in-up" style="animation-delay: 1500ms;">
+                            <p class="text-white/60 text-sm mb-4">Trusted by teams worldwide</p>
+                            <div class="flex items-center justify-center lg:justify-start space-x-8">
+                                <div class="trust-badge">
+                                    <span class="text-2xl">🔒</span>
+                                    <span class="text-xs text-white/80">Enterprise Security</span>
+                                </div>
+                                <div class="trust-badge">
+                                    <span class="text-2xl">⚡</span>
+                                    <span class="text-xs text-white/80">Lightning Fast</span>
+                                </div>
+                                <div class="trust-badge">
+                                    <span class="text-2xl">🌐</span>
+                                    <span class="text-xs text-white/80">Global Scale</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Visual -->
+                <div class="relative lg:h-full flex items-center justify-center animate-fade-in-right" style="animation-delay: 600ms;">
+                    <div class="relative">
+                        <!-- Main Dashboard Mockup -->
+                        <div class="dashboard-mockup transform rotate-3 hover:rotate-0 transition-transform duration-700">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="h-4 bg-white/20 rounded animate-pulse"></div>
+                                    <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse" style="animation-delay: 200ms;"></div>
+                                    <div class="h-4 bg-white/20 rounded w-1/2 animate-pulse" style="animation-delay: 400ms;"></div>
+                                </div>
+                                <div class="mt-6 grid grid-cols-2 gap-3">
+                                    <div class="h-16 bg-gradient-to-br from-blue-400/30 to-purple-500/30 rounded-lg"></div>
+                                    <div class="h-16 bg-gradient-to-br from-green-400/30 to-blue-500/30 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Cards -->
+                        <div class="absolute -top-8 -left-8 floating-card bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm">
+                            <div class="text-white/80 text-sm font-medium">📊 Analytics</div>
+                        </div>
+                        <div class="absolute -bottom-6 -right-6 floating-card bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm">
+                            <div class="text-white/80 text-sm font-medium">🔐 Secure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-sm font-medium mb-4">
+                    ✨ Powerful Features
+                </div>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
+                    Everything you need to 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">succeed</span>
+                </h2>
+                <p class="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
+                    Built with security, scalability, and ease of use in mind. Our platform grows with your business.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <div class="feature-card group">
+                    <div class="feature-icon bg-gradient-to-br from-blue-500 to-cyan-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Multi-tenant Architecture</h3>
+                    <p class="text-gray-600">Complete data isolation between organizations with secure role-based access control and advanced permissions.</p>
+                </div>
+
+                <div class="feature-card group">
+                    <div class="feature-icon bg-gradient-to-br from-emerald-500 to-teal-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Enterprise Security</h3>
+                    <p class="text-gray-600">Bank-grade security with row-level protection, CSRF prevention, and secure invitation system with token expiry.</p>
+                </div>
+
+                <div class="feature-card group">
+                    <div class="feature-icon bg-gradient-to-br from-purple-500 to-indigo-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Lightning Fast</h3>
+                    <p class="text-gray-600">Built with modern technologies for optimal performance and seamless user experience across all devices.</p>
+                </div>
+
+                <div class="feature-card group">
+                    <div class="feature-icon bg-gradient-to-br from-pink-500 to-rose-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Intuitive Design</h3>
+                    <p class="text-gray-600">Clean, modern interface with smooth interactions and intelligent workflows that just make sense.</p>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="text-center">
+                <div class="inline-flex flex-col sm:flex-row gap-4">
+                    <a href="{{ url_for('auth.signup') }}" class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                        Get Started Today
+                        <svg class="inline-block w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                    <a href="#demo" class="px-8 py-4 border-2 border-purple-200 text-purple-700 rounded-xl text-lg font-semibold hover:bg-purple-50 transition-all duration-300">
+                        View Demo
+                    </a>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">No credit card required • Free 14-day trial</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="stat-item">
+                    <div class="text-4xl font-bold text-purple-600 mb-2 counter" data-target="10000">0</div>
+                    <div class="text-gray-600">Organizations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold text-pink-600 mb-2 counter" data-target="50000">0</div>
+                    <div class="text-gray-600">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="99.9">0</div>
+                    <div class="text-gray-600">% Uptime</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold text-emerald-600 mb-2 counter" data-target="24">0</div>
+                    <div class="text-gray-600">Support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+        }
+    });
+}, observerOptions);
+
+// Observe all feature cards
+document.querySelectorAll('.feature-card').forEach(card => {
+    observer.observe(card);
+});
+
+// Counter animation
+function animateCounter(element) {
+    const target = parseInt(element.dataset.target);
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        
+        if (target === 99.9) {
+            element.textContent = current.toFixed(1);
+        } else {
+            element.textContent = Math.floor(current).toLocaleString();
+        }
+    }, 16);
+}
+
+// Observe counters
+document.querySelectorAll('.counter').forEach(counter => {
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                counterObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    counterObserver.observe(counter);
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %}Sign Up - AgentSDR{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center card-gradient-secondary py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Enhanced Header -->
+        <div class="text-center page-fade-enter page-fade-enter-active">
+            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                <span class="text-4xl">🚀</span>
+            </div>
+            <h2 class="text-4xl font-bold text-white mb-4">
+                Join AgentSDR!
+            </h2>
+            <p class="text-white/80 text-lg">
+                Start your journey with us today
+            </p>
+            <p class="mt-4 text-white/70">
+                Already have an account?
+                <a href="{{ url_for('auth.login') }}" class="font-semibold text-yellow-300 hover:text-yellow-200 transition-colors duration-200">
+                    Sign in here
+                </a>
+            </p>
+        </div>
+
+        <!-- Enhanced Form -->
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
+            <form class="space-y-6" method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.email.id }}" class="block text-sm font-medium text-white/90 mb-2">
+                            📧 Email Address
+                        </label>
+                        {{ form.email(class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent backdrop-blur-sm transition-all duration-200", placeholder="Enter your email") }}
+                        {% if form.email.errors %}
+                            {% for error in form.email.errors %}
+                                <p class="mt-2 text-sm text-red-300">❌ {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.display_name.id }}" class="block text-sm font-medium text-white/90 mb-2">
+                            👤 Display Name
+                        </label>
+                        {{ form.display_name(class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent backdrop-blur-sm transition-all duration-200", placeholder="How should we call you?") }}
+                        {% if form.display_name.errors %}
+                            {% for error in form.display_name.errors %}
+                                <p class="mt-2 text-sm text-red-300">❌ {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password.id }}" class="block text-sm font-medium text-white/90 mb-2">
+                            🔒 Password
+                        </label>
+                        {{ form.password(class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent backdrop-blur-sm transition-all duration-200", placeholder="Create a strong password") }}
+                        {% if form.password.errors %}
+                            {% for error in form.password.errors %}
+                                <p class="mt-2 text-sm text-red-300">❌ {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.confirm_password.id }}" class="block text-sm font-medium text-white/90 mb-2">
+                            🔐 Confirm Password
+                        </label>
+                        {{ form.confirm_password(class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-transparent backdrop-blur-sm transition-all duration-200", placeholder="Confirm your password") }}
+                        {% if form.confirm_password.errors %}
+                            {% for error in form.confirm_password.errors %}
+                                <p class="mt-2 text-sm text-red-300">❌ {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.submit(class="btn-gradient w-full py-4 px-6 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-105 pulse-glow") }}
+                </div>
+            </form>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="absolute top-10 right-10 text-white/10 text-6xl float-up">🌟</div>
+        <div class="absolute bottom-10 left-10 text-white/10 text-4xl float-up" style="animation-delay: 1.5s;">💫</div>
+    </div>
+</div>
+{% endblock %}

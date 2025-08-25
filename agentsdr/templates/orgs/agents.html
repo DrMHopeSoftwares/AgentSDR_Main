@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block title %}Agents - {{ organization.name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary-900">Agents</h3>
+                    <p class="mt-1 text-sm text-secondary-500">Organization: {{ organization.name }}</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('orgs.manage_organization', org_slug=organization.slug) }}" class="btn btn-secondary">Back to Manage</a>
+                    <a href="{{ url_for('orgs.manage_organization', org_slug=organization.slug) }}" class="btn btn-primary">Create Agent</a>
+                </div>
+                <script src="{{ url_for('static', filename='js/agents.js') }}"></script>
+            </div>
+        </div>
+    </div>
+
+    {% if agents %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for a in agents %}
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div class="p-6">
+                <!-- Agent Header -->
+                <div class="flex items-start space-x-4 mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-2xl">
+                            {% if a.agent_type == 'email_summarizer' %}📧
+                            {% elif a.agent_type == 'hubspot_data' %}🔗
+                            {% else %}🤖{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2 truncate">
+                            {{ a.name }}
+                        </h3>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                            {{ a.agent_type.replace('_', ' ').title() }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Agent Config Status -->
+                {% if a.config and a.config.get('gmail_refresh_token') %}
+                <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="flex items-center">
+                        <span class="text-green-600 text-sm font-medium">✓ Gmail Connected</span>
+                    </div>
+                </div>
+                {% elif a.agent_type == 'email_summarizer' %}
+                <div class="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 text-sm font-medium">⚠ Gmail Not Connected</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Agent Details -->
+                <div class="mb-6 space-y-2">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-2">📅</span>
+                        <span>Created: {{ a.created_at.split('T')[0] }}</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-2">🆔</span>
+                        <span class="font-mono text-xs truncate">{{ a.id[:8] }}...</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    <a href="{{ url_for('orgs.view_agent', org_slug=organization.slug, agent_id=a.id) }}"
+                       class="w-full inline-flex justify-center items-center px-4 py-2 btn btn-primary font-medium">
+                        View Details
+                    </a>
+                    <div class="flex space-x-2">
+                        <button class="flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200" 
+                                onclick="renameAgent('{{ organization.slug }}','{{ a.id }}')">
+                            ✏️ Rename
+                        </button>
+                        <button class="flex-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200" 
+                                onclick="deleteAgent('{{ organization.slug }}','{{ a.id }}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow p-8 text-center text-secondary-600">
+        No agents yet. Click "Create Agent" to add one.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

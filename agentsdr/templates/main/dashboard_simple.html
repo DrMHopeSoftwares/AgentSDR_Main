@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - AgentSDR{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Enhanced Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 page-fade-enter page-fade-enter-active">
+            ✨ Dashboard
+        </h1>
+        <p class="text-gray-600 text-lg">Your command center awaits</p>
+    </div>
+
+    <!-- Debug Info - Enhanced -->
+    <div class="card-gradient-success rounded-xl p-6 text-white mb-8 reveal-list">
+        <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <span class="text-2xl">🔍</span>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold">System Status</h3>
+                <p class="text-white/80">Debug Information</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="bg-white/10 rounded-lg p-3">
+                <strong>👤 User:</strong> {{ current_user.email if current_user else 'Not logged in' }}
+            </div>
+            <div class="bg-white/10 rounded-lg p-3">
+                <strong>⚡ Super Admin:</strong> {{ current_user.is_super_admin if current_user else 'N/A' }}
+            </div>
+            <div class="bg-white/10 rounded-lg p-3">
+                <strong>🏢 Organizations:</strong> {{ organizations|length }}
+            </div>
+            <div class="bg-white/10 rounded-lg p-3">
+                <strong>📊 Recent Records:</strong> {{ recent_records|length }}
+            </div>
+            {% if error_message %}
+            <div class="bg-red-500/20 rounded-lg p-3 col-span-2">
+                <strong>❌ Error:</strong> {{ error_message }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Enhanced Welcome Section -->
+    <div class="card-gradient rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="px-8 py-8 relative">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <span class="text-3xl">👋</span>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">
+                        Welcome back, {{ current_user.display_name or current_user.email }}!
+                    </h2>
+                    <p class="mt-2 text-white/90 text-lg">
+                        Manage your organizations and data from your personal dashboard.
+                    </p>
+                </div>
+            </div>
+            <div class="absolute top-4 right-4 text-white/10 text-6xl float-up">🚀</div>
+        </div>
+    </div>
+
+    <!-- Organizations Section -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Your Organizations</h2>
+            <a href="{{ url_for('orgs.create_organization') }}" 
+               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Organization
+            </a>
+        </div>
+        
+        {% if organizations %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal-list">
+                {% for org_data in organizations %}
+                <div class="card bg-white rounded-xl shadow-lg border-0 overflow-hidden hover:shadow-2xl transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">{{ org_data.org.name[0].upper() }}</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">{{ org_data.org.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ org_data.org.slug }}</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                       {% if org_data.role == 'admin' %}bg-gradient-to-r from-blue-500 to-purple-600 text-white{% else %}bg-gradient-to-r from-green-500 to-teal-600 text-white{% endif %}">
+                                {{ org_data.role.title() }}
+                            </span>
+                        </div>
+                        <div class="space-y-3">
+                            {% if org_data.role == 'admin' %}
+                            <a href="/orgs/{{ org_data.org.slug }}/members"
+                               class="w-full text-center py-3 px-4 rounded-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300 hover:scale-105 block">
+                                👥 Manage Organization
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <div class="text-gray-400 mb-4">
+                    <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No organizations</h3>
+                <p class="text-gray-600 mb-4">Get started by creating your first organization.</p>
+                <a href="{{ url_for('orgs.create_organization') }}" 
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Create Organization
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Records Section -->
+    {% if recent_records %}
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Recent Records</h2>
+        <div class="space-y-4">
+            {% for record in recent_records %}
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-medium">{{ record.title }}</h4>
+                        <p class="text-gray-600 text-sm mt-1">{{ record.content[:100] }}{% if record.content|length > 100 %}...{% endif %}</p>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        {{ record.created_at.split('T')[0] }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="{{ url_for('orgs.create_organization') }}" 
+               class="border border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="text-blue-600">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-medium">Create Organization</p>
+                        <p class="text-sm text-gray-600">Start a new organization</p>
+                    </div>
+                </div>
+            </a>
+
+            {% if current_user.is_super_admin %}
+            <a href="/admin" 
+               class="border border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="text-blue-600">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-medium">Admin Panel</p>
+                        <p class="text-sm text-gray-600">Manage platform</p>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

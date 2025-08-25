@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <div class="card-gradient rounded-xl shadow-lg p-8 text-white">
+    <div class="flex items-center space-x-4 mb-6">
+      <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+        <span class="text-3xl">⚡</span>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+        <p class="text-white/80">Platform Overview & Management</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-list">
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-white/80 text-sm font-medium">🏢 Organizations</div>
+            <div class="text-3xl font-bold mt-2">{{ orgs_count }}</div>
+          </div>
+          <div class="text-white/20 text-4xl">🏢</div>
+        </div>
+      </div>
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-white/80 text-sm font-medium">👤 Users</div>
+            <div class="text-3xl font-bold mt-2">{{ users_count }}</div>
+          </div>
+          <div class="text-white/20 text-4xl">👤</div>
+        </div>
+      </div>
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-white/80 text-sm font-medium">📊 Records</div>
+            <div class="text-3xl font-bold mt-2">{{ records_count }}</div>
+          </div>
+          <div class="text-white/20 text-4xl">📊</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-medium">Recent Organizations</h3>
+      <a class="btn btn-secondary" href="{{ url_for('admin.list_organizations') }}">View all</a>
+    </div>
+    <div class="space-y-2">
+      {% for o in recent_orgs %}
+      <div class="border rounded p-3 flex justify-between items-center">
+        <div>
+          <div class="font-medium">{{ o.name }}</div>
+          <div class="text-xs text-secondary-500">{{ o.slug }}</div>
+        </div>
+        <a class="text-blue-600 hover:underline" href="{{ url_for('admin.view_organization', org_id=o.id) }}">Open</a>
+      </div>
+      {% else %}
+      <div class="text-secondary-500">No organizations yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-medium">Recent Users</h3>
+      <a class="btn btn-secondary" href="{{ url_for('admin.list_users') }}">View all</a>
+    </div>
+    <div class="space-y-2">
+      {% for u in recent_users %}
+      <div class="border rounded p-3 flex justify-between items-center">
+        <div>
+          <div class="font-medium">{{ u.display_name or u.email }}</div>
+          <div class="text-xs text-secondary-500">{{ u.email }}</div>
+        </div>
+        <a class="text-blue-600 hover:underline" href="{{ url_for('admin.view_user', user_id=u.id) }}">Open</a>
+      </div>
+      {% else %}
+      <div class="text-secondary-500">No users found.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
