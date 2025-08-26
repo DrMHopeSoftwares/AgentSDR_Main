@@ -23,6 +23,18 @@ class Config:
     MAILJET_SENDER_NAME = os.environ.get('MAILJET_SENDER_NAME', 'AgentSDR')
     USE_MAILJET = os.environ.get('USE_MAILJET', 'true').lower() == 'true'
     
+    # Bolna API settings
+    BOLNA_API_KEY = os.environ.get('BOLNA_API_KEY')
+    BOLNA_API_URL = os.environ.get('BOLNA_API_URL', 'https://api.bolna.ai')
+    
+    # OpenAI API settings
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    OPENAI_API_URL = os.environ.get('OPENAI_API_URL', 'https://api.openai.com/v1')
+    
+    # HubSpot API settings
+    HUBSPOT_API_KEY = os.environ.get('HUBSPOT_API_KEY')
+    HUBSPOT_API_URL = os.environ.get('HUBSPOT_API_URL', 'https://api.hubapi.com')
+    
     # Rate limiting
     RATELIMIT_DEFAULT = "200 per day;50 per hour"
     RATELIMIT_STORAGE_URL = "memory://"
