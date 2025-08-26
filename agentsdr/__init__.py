@@ -47,9 +47,12 @@ def create_app(config_name=None):
     try:
         from agentsdr.orgs.routes import summarize_emails
         from agentsdr.orgs.routes import test_hubspot_connection, hubspot_call_contact
+        from agentsdr.orgs.routes import manage_schedule, toggle_schedule
         csrf.exempt(summarize_emails)
         csrf.exempt(test_hubspot_connection)
         csrf.exempt(hubspot_call_contact)
+        csrf.exempt(manage_schedule)
+        csrf.exempt(toggle_schedule)
     except Exception:
         # If import fails during certain tooling or tests, skip exemption
         pass

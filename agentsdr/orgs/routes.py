@@ -7,10 +7,66 @@ from agentsdr.core.email import get_email_service
 from agentsdr.core.models import CreateOrganizationRequest, UpdateOrganizationRequest, CreateInvitationRequest
 from agentsdr.services.gmail_service import fetch_and_summarize_emails
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import secrets
 import json
+
+def calculate_next_run_time(schedule_time, frequency_type, day_of_week=None, day_of_month=None, one_time_datetime=None):
+    """Calculate the next run time based on frequency and current time"""
+    now = datetime.now(timezone.utc)
+    
+    if frequency_type == 'once':
+        # For one-time schedules, use the specified datetime
+        if one_time_datetime:
+            if isinstance(one_time_datetime, str):
+                return datetime.fromisoformat(one_time_datetime.replace('Z', '+00:00'))
+            return one_time_datetime
+        else:
+            # Fallback to now + 1 hour if no datetime specified
+            return now + timedelta(hours=1)
+    
+    hour, minute = map(int, schedule_time.split(':'))
+    
+    if frequency_type == 'daily':
+        # Next run is today if time hasn't passed, otherwise tomorrow
+        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if next_run <= now:
+            next_run += timedelta(days=1)
+    
+    elif frequency_type == 'weekly':
+        # Find the next occurrence of the specified day of week
+        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        current_weekday = now.weekday() + 1  # Convert to 1=Monday format
+        
+        days_until_target = (day_of_week - current_weekday) % 7
+        if days_until_target == 0 and next_run <= now:
+            days_until_target = 7
+        
+        next_run += timedelta(days=days_until_target)
+    
+    elif frequency_type == 'monthly':
+        # Find the next occurrence of the specified day of month
+        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        
+        if now.day < day_of_month:
+            # This month
+            next_run = next_run.replace(day=day_of_month)
+        elif now.day == day_of_month and next_run > now:
+            # Today but time hasn't passed
+            next_run = next_run.replace(day=day_of_month)
+        else:
+            # Next month
+            if now.month == 12:
+                next_run = next_run.replace(year=now.year + 1, month=1, day=min(day_of_month, 31))
+            else:
+                next_month = now.month + 1
+                # Handle months with fewer than 31 days
+                import calendar
+                max_day = calendar.monthrange(now.year, next_month)[1]
+                next_run = next_run.replace(month=next_month, day=min(day_of_month, max_day))
+    
+    return next_run
 
 @orgs_bp.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -52,7 +108,7 @@ def create_organization():
                 'slug': org_request.slug,
                 'owner_user_id': current_user.id,
                 'created_at': datetime.utcnow().isoformat(),
-                'updated_at': datetime.utcnow().isoformat()
+                'updated_at': datetime.now(timezone.utc).isoformat()
             }
 
             current_app.logger.info(f"Inserting organization data: {org_data}")
@@ -254,7 +310,7 @@ def create_agent(org_slug):
 
         # Create agent record
         import json, uuid
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         agent = {
             'id': str(uuid.uuid4()),
             'org_id': org_id,
@@ -518,7 +574,7 @@ def gmail_callback(org_slug, agent_id):
 
         supabase.table('agents').update({
             'config': config_update,
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.now(timezone.utc).isoformat()
         }).eq('id', agent_id).execute()
 
         flash('Gmail connected successfully!', 'success')
@@ -531,7 +587,7 @@ def gmail_callback(org_slug, agent_id):
 
 @orgs_bp.route('/gmail/callback')
 def gmail_callback_handler():
-    """Fixed Gmail OAuth callback handler"""
+    """Fixed Gmail OAuth callback handler - No auth required for OAuth callback"""
     try:
         import requests
         import os
@@ -540,20 +596,24 @@ def gmail_callback_handler():
         state = request.args.get('state')
         error = request.args.get('error')
 
+        current_app.logger.info(f"Gmail callback received: code={bool(code)}, state={state}, error={error}")
+
         if error:
             flash(f'Gmail authorization failed: {error}', 'error')
-            return redirect(url_for('main.dashboard'))
+            # Redirect to login with message to try again
+            return redirect(url_for('auth.login') + '?message=gmail_auth_failed')
 
         if not code or not state:
             flash('Invalid OAuth response.', 'error')
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('auth.login') + '?message=invalid_oauth_response')
 
         # Parse state to get org_slug and agent_id
         try:
             org_slug, agent_id = state.split(':', 1)
+            current_app.logger.info(f"Parsed state: org_slug={org_slug}, agent_id={agent_id}")
         except ValueError:
             flash('Invalid state parameter.', 'error')
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('auth.login') + '?message=invalid_state')
 
         # Exchange code for tokens
         client_id = os.getenv('GMAIL_CLIENT_ID')
@@ -576,6 +636,7 @@ def gmail_callback_handler():
         
         redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
         current_app.logger.info(f"Main callback redirect URI: {redirect_uri}")
+        
         token_data = {
             'client_id': client_id,
             'client_secret': client_secret,
@@ -584,28 +645,43 @@ def gmail_callback_handler():
             'redirect_uri': redirect_uri
         }
 
+        current_app.logger.info(f"Attempting token exchange with Google")
         token_response = requests.post('https://oauth2.googleapis.com/token', data=token_data)
+        current_app.logger.info(f"Token response status: {token_response.status_code}")
+        
+        if token_response.status_code != 200:
+            current_app.logger.error(f"Token exchange failed: {token_response.text}")
+            return redirect(url_for('auth.login') + f'?message=token_exchange_failed&org_slug={org_slug}&agent_id={agent_id}')
+
         token_json = token_response.json()
 
         if 'error' in token_json:
-            flash(f'Token exchange failed: {token_json["error"]}', 'error')
-            return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
+            current_app.logger.error(f'Token exchange error: {token_json}')
+            return redirect(url_for('auth.login') + f'?message=token_error&org_slug={org_slug}&agent_id={agent_id}')
 
-        # Store refresh token in agent config
-        supabase = get_service_supabase()
-        config_update = {
-            'gmail_refresh_token': token_json.get('refresh_token'),
-            'gmail_access_token': token_json.get('access_token'),
-            'gmail_connected_at': datetime.utcnow().isoformat()
-        }
+        # Store refresh token in agent config (using service supabase to bypass RLS)
+        try:
+            supabase = get_service_supabase()
+            config_update = {
+                'gmail_refresh_token': token_json.get('refresh_token'),
+                'gmail_access_token': token_json.get('access_token'),
+                'gmail_connected_at': datetime.utcnow().isoformat()
+            }
 
-        supabase.table('agents').update({
-            'config': config_update,
-            'updated_at': datetime.utcnow().isoformat()
-        }).eq('id', agent_id).execute()
+            current_app.logger.info(f"Updating agent {agent_id} with Gmail tokens")
+            result = supabase.table('agents').update({
+                'config': config_update,
+                'updated_at': datetime.now(timezone.utc).isoformat()
+            }).eq('id', agent_id).execute()
+            
+            current_app.logger.info(f"Agent update result: {result}")
 
-        flash('Gmail connected successfully!', 'success')
-        return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
+            # Redirect to login with success message and redirect info
+            return redirect(url_for('auth.login') + f'?message=gmail_connected&org_slug={org_slug}&agent_id={agent_id}')
+            
+        except Exception as db_error:
+            current_app.logger.error(f"Database update error: {db_error}")
+            return redirect(url_for('auth.login') + f'?message=db_error&org_slug={org_slug}&agent_id={agent_id}')
 
     except Exception as e:
         current_app.logger.error(f"Error in Gmail callback: {e}")
@@ -863,6 +939,12 @@ def manage_schedule(org_slug, agent_id):
             schedule_time = data.get('schedule_time')
             recipient_email = data.get('recipient_email')
             criteria_type = data.get('criteria_type', 'last_24_hours')
+            frequency_type = data.get('frequency_type', 'daily')
+            email_count = data.get('email_count')
+            email_hours = data.get('email_hours')
+            day_of_week = data.get('day_of_week')
+            day_of_month = data.get('day_of_month')
+            one_time_datetime = data.get('one_time_datetime')
             
             if not schedule_time or not recipient_email:
                 current_app.logger.error("Missing required fields")
@@ -880,8 +962,26 @@ def manage_schedule(org_slug, agent_id):
                         'schedule_time': schedule_time,
                         'recipient_email': recipient_email,
                         'criteria_type': criteria_type,
-                        'updated_at': datetime.utcnow().isoformat()
+                        'frequency_type': frequency_type,
+                        'updated_at': datetime.now(timezone.utc).isoformat()
                     }
+                    
+                    # Add optional fields if provided
+                    if email_count is not None:
+                        update_data['email_count'] = email_count
+                    if email_hours is not None:
+                        update_data['email_hours'] = email_hours
+                    if day_of_week is not None:
+                        update_data['day_of_week'] = day_of_week
+                    if day_of_month is not None:
+                        update_data['day_of_month'] = day_of_month
+                    if one_time_datetime is not None:
+                        update_data['one_time_datetime'] = one_time_datetime
+                    
+                    # Calculate next run time
+                    update_data['next_run_at'] = calculate_next_run_time(
+                        schedule_time, frequency_type, day_of_week, day_of_month, one_time_datetime
+                    ).isoformat()
                     
                     current_app.logger.info(f"Updating schedule {schedule_id} with data: {update_data}")
                     result = supabase.table('agent_schedules').update(update_data).eq('id', schedule_id).execute()
@@ -894,9 +994,27 @@ def manage_schedule(org_slug, agent_id):
                         'schedule_time': schedule_time,
                         'recipient_email': recipient_email,
                         'criteria_type': criteria_type,
+                        'frequency_type': frequency_type,
                         'created_by': current_user.id,
                         'is_active': True
                     }
+                    
+                    # Add optional fields if provided
+                    if email_count is not None:
+                        schedule_data['email_count'] = email_count
+                    if email_hours is not None:
+                        schedule_data['email_hours'] = email_hours
+                    if day_of_week is not None:
+                        schedule_data['day_of_week'] = day_of_week
+                    if day_of_month is not None:
+                        schedule_data['day_of_month'] = day_of_month
+                    if one_time_datetime is not None:
+                        schedule_data['one_time_datetime'] = one_time_datetime
+                    
+                    # Calculate next run time
+                    schedule_data['next_run_at'] = calculate_next_run_time(
+                        schedule_time, frequency_type, day_of_week, day_of_month, one_time_datetime
+                    ).isoformat()
                     
                     current_app.logger.info(f"Creating new schedule with data: {schedule_data}")
                     result = supabase.table('agent_schedules').insert(schedule_data).execute()
@@ -940,7 +1058,7 @@ def toggle_schedule(org_slug, agent_id):
         # Update schedule status
         supabase.table('agent_schedules').update({
             'is_active': new_status,
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.now(timezone.utc).isoformat()
         }).eq('id', schedule['id']).execute()
         
         return jsonify({
@@ -1289,7 +1407,7 @@ def hubspot_callback_handler():
 
         supabase.table('agents').update({
             'config': config_update,
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.now(timezone.utc).isoformat()
         }).eq('id', agent_id).execute()
 
         flash('Hubspot connected successfully!', 'success')

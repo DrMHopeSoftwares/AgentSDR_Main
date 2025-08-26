@@ -188,15 +188,75 @@
                     </div>
 
                     <!-- Schedule Form -->
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Daily Time</label>
-                                <input type="time" id="scheduleTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div class="space-y-6">
+                        <!-- Email Criteria Section -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">📧 Email Criteria</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Selection</label>
+                                    <select id="emailCriteria" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="updateEmailCriteriaOptions()">
+                                        <option value="last_24_hours">Last 24 Hours</option>
+                                        <option value="last_7_days">Last 7 Days</option>
+                                        <option value="custom_hours">Custom Hours Back</option>
+                                        <option value="latest_n">Latest N Emails</option>
+                                        <option value="oldest_n">Oldest N Emails</option>
+                                    </select>
+                                </div>
+                                <div id="customCriteriaContainer" style="display: none;">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" id="customCriteriaLabel">Value</label>
+                                    <input type="number" id="customCriteriaValue" min="1" max="168" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Recipient Email</label>
-                                <input type="email" id="recipientEmail" placeholder="your-email@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Schedule Frequency Section -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">🕐 Schedule Frequency</h4>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
+                                        <select id="scheduleFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="updateFrequencyOptions()">
+                                            <option value="daily" selected>Daily</option>
+                                            <option value="once">One Time</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div id="timeContainer">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                                        <input type="time" id="scheduleTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                                
+                                <div id="datetimeContainer" style="display: none;">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">📅 Date & Time</label>
+                                    <input type="datetime-local" id="oneTimeDatetime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <p class="text-sm text-gray-500 mt-1">Select the exact date and time to send the email summary</p>
+                                </div>
+                                
+                                <div id="frequencyOptionsContainer" style="display: none;">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2" id="frequencyOptionsLabel">Day</label>
+                                    <select id="frequencyOptions" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recipient Section -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">📨 Delivery Settings</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Recipient Email</label>
+                                    <input type="email" id="recipientEmail" placeholder="your-email@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Next Run</label>
+                                    <input type="text" id="nextRunDisplay" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600" placeholder="Will be calculated when saved">
+                                </div>
                             </div>
                         </div>
                         
@@ -204,8 +264,8 @@
                             <button onclick="saveSchedule()" class="btn-gradient py-3 px-6 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
                                 💾 Save Schedule
                             </button>
-                            <button onclick="toggleSchedule()" id="toggleScheduleBtn" class="px-4 py-3 bg-gray-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105">
-                                ⏸️ Pause Schedule
+                            <button onclick="toggleSchedule()" id="toggleScheduleBtn" class="px-6 py-4 bg-gray-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center">
+                                ⏸️ <span class="ml-2 font-bold">PAUSE</span>
                             </button>
                         </div>
                     </div>
@@ -599,28 +659,153 @@ document.addEventListener('alpine:init', () => {
             );
         }
     });
+    
+    // Initialize frequency options on page load
+    updateFrequencyOptions();
 });
+
+// UI Helper functions
+function updateEmailCriteriaOptions() {
+    const criteria = document.getElementById('emailCriteria').value;
+    const container = document.getElementById('customCriteriaContainer');
+    const label = document.getElementById('customCriteriaLabel');
+    const input = document.getElementById('customCriteriaValue');
+    
+    if (criteria === 'custom_hours') {
+        container.style.display = 'block';
+        label.textContent = 'Hours Back';
+        input.placeholder = 'Enter hours (1-168)';
+        input.max = '168';
+    } else if (criteria === 'latest_n' || criteria === 'oldest_n') {
+        container.style.display = 'block';
+        label.textContent = 'Number of Emails';
+        input.placeholder = 'Enter count (1-100)';
+        input.max = '100';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+function updateFrequencyOptions() {
+    const frequency = document.getElementById('scheduleFrequency').value;
+    const container = document.getElementById('frequencyOptionsContainer');
+    const label = document.getElementById('frequencyOptionsLabel');
+    const select = document.getElementById('frequencyOptions');
+    const timeContainer = document.getElementById('timeContainer');
+    const datetimeContainer = document.getElementById('datetimeContainer');
+    
+    console.log('Updating frequency options for:', frequency);
+    
+    if (frequency === 'once') {
+        // Show datetime picker for one-time schedules
+        timeContainer.style.display = 'none';
+        datetimeContainer.style.display = 'block';
+        container.style.display = 'none';
+        
+        // Set default to current time + 1 hour
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        const datetimeLocal = now.toISOString().slice(0, 16);
+        document.getElementById('oneTimeDatetime').value = datetimeLocal;
+        
+    } else if (frequency === 'weekly') {
+        timeContainer.style.display = 'block';
+        datetimeContainer.style.display = 'none';
+        container.style.display = 'block';
+        label.textContent = 'Day of Week';
+        select.innerHTML = `
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="7">Sunday</option>
+        `;
+    } else if (frequency === 'monthly') {
+        timeContainer.style.display = 'block';
+        datetimeContainer.style.display = 'none';
+        container.style.display = 'block';
+        label.textContent = 'Day of Month';
+        let options = '';
+        for (let i = 1; i <= 31; i++) {
+            options += `<option value="${i}">${i}</option>`;
+        }
+        select.innerHTML = options;
+    } else {
+        // Daily
+        timeContainer.style.display = 'block';
+        datetimeContainer.style.display = 'none';
+        container.style.display = 'none';
+    }
+}
 
 // Scheduling functions
 function saveSchedule() {
-    const scheduleTime = document.getElementById('scheduleTime').value;
     const recipientEmail = document.getElementById('recipientEmail').value;
+    const emailCriteria = document.getElementById('emailCriteria').value;
+    const frequency = document.getElementById('scheduleFrequency').value;
     
-    if (!scheduleTime || !recipientEmail) {
-        showToast('Please fill in both time and email fields', 'error');
-        return;
+    let scheduleTime = '';
+    let oneTimeDatetime = '';
+    
+    if (frequency === 'once') {
+        oneTimeDatetime = document.getElementById('oneTimeDatetime').value;
+        if (!oneTimeDatetime || !recipientEmail) {
+            showToast('Please fill in date/time and email fields', 'error');
+            return;
+        }
+        // Convert to schedule_time format for consistency
+        const dt = new Date(oneTimeDatetime);
+        scheduleTime = dt.toTimeString().slice(0, 5); // HH:MM format
+    } else {
+        scheduleTime = document.getElementById('scheduleTime').value;
+        if (!scheduleTime || !recipientEmail) {
+            showToast('Please fill in time and email fields', 'error');
+            return;
+        }
     }
+    
+    // Build schedule data
+    const scheduleData = {
+        schedule_time: scheduleTime,
+        recipient_email: recipientEmail,
+        criteria_type: emailCriteria,
+        frequency_type: frequency
+    };
+    
+    // Add one-time datetime if applicable
+    if (frequency === 'once' && oneTimeDatetime) {
+        scheduleData.one_time_datetime = new Date(oneTimeDatetime).toISOString();
+    }
+    
+    // Add criteria-specific values
+    const customValue = document.getElementById('customCriteriaValue').value;
+    if (emailCriteria === 'custom_hours' && customValue) {
+        scheduleData.email_hours = parseInt(customValue);
+    } else if ((emailCriteria === 'latest_n' || emailCriteria === 'oldest_n') && customValue) {
+        scheduleData.email_count = parseInt(customValue);
+    }
+    
+    // Add frequency-specific values
+    const frequencyOption = document.getElementById('frequencyOptions');
+    if (frequency === 'weekly' && frequencyOption.style.display !== 'none') {
+        scheduleData.day_of_week = parseInt(frequencyOption.value);
+    } else if (frequency === 'monthly' && frequencyOption.style.display !== 'none') {
+        scheduleData.day_of_month = parseInt(frequencyOption.value);
+    }
+    
+    console.log('Saving schedule:', scheduleData);
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     fetch(`/orgs/{{ organization.slug }}/agents/{{ agent.id }}/schedule`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({
-            schedule_time: scheduleTime,
-            recipient_email: recipientEmail,
-            criteria_type: 'last_24_hours'
-        })
+        body: JSON.stringify(scheduleData)
     })
     .then(response => response.json())
     .then(data => {
@@ -638,10 +823,13 @@ function saveSchedule() {
 }
 
 function toggleSchedule() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
     fetch(`/orgs/{{ organization.slug }}/agents/{{ agent.id }}/schedule/toggle`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         }
     })
     .then(response => response.json())
@@ -682,11 +870,11 @@ function loadCurrentSchedule() {
                 const toggleBtn = document.getElementById('toggleScheduleBtn');
                 if (toggleBtn) {
                     if (data.schedule.is_active) {
-                        toggleBtn.textContent = '⏸️ Pause Schedule';
-                        toggleBtn.className = 'px-4 py-3 bg-red-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
+                        toggleBtn.innerHTML = '⏸️ <span class="ml-2 font-bold">PAUSE</span>';
+                        toggleBtn.className = 'px-6 py-4 bg-red-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center';
                     } else {
-                        toggleBtn.textContent = '▶️ Activate Schedule';
-                        toggleBtn.className = 'px-4 py-3 bg-green-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
+                        toggleBtn.innerHTML = '▶️ <span class="ml-2 font-bold">ACTIVE</span>';
+                        toggleBtn.className = 'px-6 py-4 bg-green-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center';
                     }
                 }
             }

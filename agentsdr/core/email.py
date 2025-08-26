@@ -5,6 +5,7 @@ from flask import current_app, render_template_string
 from typing import Optional
 import os
 from datetime import datetime
+from mailjet_rest import Client
 
 
 class EmailService:
@@ -167,8 +168,9 @@ class EmailService:
         </html>
         """
 
-# Global email service instance - will be initialized when needed
+# Global email service instances - will be initialized when needed
 email_service = None
+mailjet_service = None
 
 def get_email_service():
     global email_service
@@ -176,8 +178,156 @@ def get_email_service():
         email_service = EmailService()
     return email_service
 
+def get_mailjet_service():
+    global mailjet_service
+    if mailjet_service is None:
+        mailjet_service = MailjetService()
+    return mailjet_service
+
+class MailjetService:
+    def __init__(self):
+        self.api_key = os.getenv('MAILJET_API_KEY')
+        self.api_secret = os.getenv('MAILJET_API_SECRET')
+        self.sender_email = os.getenv('MAILJET_SENDER_EMAIL')
+        self.sender_name = os.getenv('MAILJET_SENDER_NAME', 'AgentSDR')
+        
+        if self.api_key and self.api_secret:
+            self.client = Client(auth=(self.api_key, self.api_secret), version='v3.1')
+        else:
+            self.client = None
+            current_app.logger.warning("Mailjet credentials not configured")
+    
+    def send_email_summary(self, recipient_email, summaries, agent_name, criteria_type):
+        """Send email summary using Mailjet API"""
+        if not self.client:
+            current_app.logger.error("Mailjet client not initialized - check API credentials")
+            return False
+        
+        try:
+            # Generate HTML content
+            html_content = self._generate_summary_html(summaries, agent_name, criteria_type)
+            
+            # Prepare email data
+            data = {
+                'Messages': [
+                    {
+                        "From": {
+                            "Email": self.sender_email,
+                            "Name": self.sender_name
+                        },
+                        "To": [
+                            {
+                                "Email": recipient_email
+                            }
+                        ],
+                        "Subject": f"📧 Email Summary - {agent_name}",
+                        "HTMLPart": html_content,
+                        "CustomID": f"EmailSummary-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+                    }
+                ]
+            }
+            
+            # Send email
+            result = self.client.send.create(data=data)
+            
+            if result.status_code == 200:
+                current_app.logger.info(f"Email summary sent successfully to {recipient_email}")
+                return True
+            else:
+                current_app.logger.error(f"Failed to send email: {result.status_code} - {result.json()}")
+                return False
+                
+        except Exception as e:
+            current_app.logger.error(f"Error sending email with Mailjet: {e}")
+            return False
+    
+    def _generate_summary_html(self, summaries, agent_name, criteria_type):
+        """Generate HTML content for email summary"""
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Email Summary - {agent_name}</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px; }}
+                .summary-item {{ background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 20px; border-radius: 5px; }}
+                .sender {{ font-weight: bold; color: #667eea; margin-bottom: 5px; }}
+                .subject {{ font-weight: bold; margin-bottom: 10px; }}
+                .date {{ color: #666; font-size: 0.9em; margin-bottom: 10px; }}
+                .summary {{ background: white; padding: 15px; border-radius: 5px; border: 1px solid #e9ecef; }}
+                .footer {{ text-align: center; margin-top: 30px; color: #666; font-size: 0.9em; }}
+                .stats {{ background: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; }}
+                .powered-by {{ background: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center; margin-top: 20px; font-size: 0.8em; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>📧 Email Summary</h1>
+                <p>Your automated email digest from {agent_name}</p>
+            </div>
+            
+            <div class="stats">
+                <h3>📊 Summary Statistics</h3>
+                <p><strong>{len(summaries)} emails</strong> summarized from the <strong>{criteria_type.replace('_', ' ').title()}</strong></p>
+                <p>Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
+            </div>
+        """
+        
+        # Add each summary
+        for i, summary in enumerate(summaries, 1):
+            html_content += f"""
+            <div class="summary-item">
+                <div class="sender">👤 {summary.get('sender', 'Unknown Sender')}</div>
+                <div class="subject">📝 {summary.get('subject', 'No Subject')}</div>
+                <div class="date">📅 {summary.get('date', 'Unknown Date')}</div>
+                <div class="summary">
+                    {summary.get('summary', 'No summary available')}
+                </div>
+            </div>
+            """
+        
+        html_content += """
+            <div class="footer">
+                <p>This is an automated summary generated by your AgentSDR email summarizer.</p>
+                <p>You can manage your email preferences in your AgentSDR dashboard.</p>
+            </div>
+            <div class="powered-by">
+                <p>📧 Powered by Mailjet Email Service</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return html_content
+
+
 def send_email_summary(recipient_email, summaries, agent_name, criteria_type):
-    """Send email summary to user"""
+    """Send email summary to user using Mailjet (with SMTP fallback)"""
+    try:
+        # Try Mailjet first
+        use_mailjet = os.getenv('USE_MAILJET', 'true').lower() == 'true'
+        
+        if use_mailjet:
+            mailjet_service = MailjetService()
+            result = mailjet_service.send_email_summary(recipient_email, summaries, agent_name, criteria_type)
+            if result:
+                return True
+            else:
+                current_app.logger.warning("Mailjet failed, falling back to SMTP")
+        
+        # Fallback to SMTP
+        return _send_email_summary_smtp(recipient_email, summaries, agent_name, criteria_type)
+        
+    except Exception as e:
+        current_app.logger.error(f"Failed to send email summary: {e}")
+        return False
+
+
+def _send_email_summary_smtp(recipient_email, summaries, agent_name, criteria_type):
+    """Send email summary using SMTP (fallback method)"""
     try:
         # Email configuration
         smtp_host = os.getenv('SMTP_HOST', 'localhost')
@@ -192,7 +342,7 @@ def send_email_summary(recipient_email, summaries, agent_name, criteria_type):
         
         # Create message
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"📧 Daily Email Summary - {agent_name}"
+        msg['Subject'] = f"📧 Email Summary - {agent_name}"
         msg['From'] = smtp_user
         msg['To'] = recipient_email
         
@@ -203,7 +353,7 @@ def send_email_summary(recipient_email, summaries, agent_name, criteria_type):
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Daily Email Summary</title>
+            <title>Email Summary</title>
             <style>
                 body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }}
                 .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px; }}
@@ -218,7 +368,7 @@ def send_email_summary(recipient_email, summaries, agent_name, criteria_type):
         </head>
         <body>
             <div class="header">
-                <h1>📧 Daily Email Summary</h1>
+                <h1>📧 Email Summary</h1>
                 <p>Your automated email digest from {agent_name}</p>
             </div>
             
@@ -262,9 +412,9 @@ def send_email_summary(recipient_email, summaries, agent_name, criteria_type):
             server.login(smtp_user, smtp_pass)
             server.send_message(msg)
         
-        current_app.logger.info(f"Email summary sent to {recipient_email}")
+        current_app.logger.info(f"Email summary sent via SMTP to {recipient_email}")
         return True
         
     except Exception as e:
-        current_app.logger.error(f"Failed to send email summary: {e}")
+        current_app.logger.error(f"Failed to send email summary via SMTP: {e}")
         return False

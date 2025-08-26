@@ -13,7 +13,31 @@ import secrets
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        # Handle Gmail connection redirect for already authenticated users
+        message = request.args.get('message')
+        org_slug = request.args.get('org_slug')
+        agent_id = request.args.get('agent_id')
+        
+        if message and org_slug and agent_id:
+            if message == 'gmail_connected':
+                flash('Gmail connected successfully!', 'success')
+                return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
+            elif message in ['token_exchange_failed', 'token_error', 'db_error']:
+                flash('Error connecting Gmail account. Please try again.', 'error')
+                return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
+        
         return redirect(url_for('main.dashboard'))
+    
+    # Handle Gmail connection messages for login page
+    message = request.args.get('message')
+    org_slug = request.args.get('org_slug')
+    agent_id = request.args.get('agent_id')
+    
+    if message:
+        if message == 'gmail_connected':
+            flash('Gmail connected successfully! Please log in to continue.', 'success')
+        elif message in ['gmail_auth_failed', 'invalid_oauth_response', 'invalid_state', 'token_exchange_failed', 'token_error', 'db_error']:
+            flash('Error connecting Gmail account. Please log in and try again.', 'error')
     
     form = LoginForm()
     if form.validate_on_submit():
@@ -41,6 +65,15 @@ def login():
                         response.session.access_token,
                         response.session.refresh_token
                     )
+                    
+                    # Handle Gmail connection redirect after login
+                    org_slug = request.args.get('org_slug')
+                    agent_id = request.args.get('agent_id')
+                    message = request.args.get('message')
+                    
+                    if org_slug and agent_id and message == 'gmail_connected':
+                        flash('Login successful! Gmail has been connected to your agent.', 'success')
+                        return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
                     
                     next_page = request.args.get('next')
                     if not next_page or not next_page.startswith('/'):

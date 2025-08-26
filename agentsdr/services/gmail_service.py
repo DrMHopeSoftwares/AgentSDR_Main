@@ -86,25 +86,34 @@ class GmailService:
             current_app.logger.error(f"Full traceback: {traceback.format_exc()}")
             raise
     
-    def get_query_for_criteria(self, criteria_type: str, count: int = 10) -> str:
+    def get_query_for_criteria(self, criteria_type: str, count: int = 10, hours: int = None) -> str:
         """Build Gmail search query based on criteria"""
         # Use Gmail's search operators to better match the UI semantics
         # Docs: https://support.google.com/mail/answer/7190
         criteria = (criteria_type or '').strip()
         if criteria == 'last_24_hours':
             return 'in:inbox newer_than:1d'
-        if criteria == 'last_7_days':
+        elif criteria == 'last_7_days':
             return 'in:inbox newer_than:7d'
-        if criteria == 'latest_n':
+        elif criteria == 'custom_hours':
+            if hours and hours > 0:
+                if hours <= 24:
+                    return f'in:inbox newer_than:{hours}h'
+                else:
+                    days = hours // 24
+                    return f'in:inbox newer_than:{days}d'
+            else:
+                return 'in:inbox newer_than:1d'  # fallback
+        elif criteria == 'latest_n':
             # Use a broader query to get more emails - include all emails, not just inbox
             return ''
-        if criteria == 'oldest_n':
+        elif criteria == 'oldest_n':
             # We will sort ascending later; query stays broad - include all emails
             return ''
         # Default - use broadest query - include all emails
         return ''
     
-    def fetch_emails(self, refresh_token: str, criteria_type: str, count: int = 10) -> List[Dict[str, Any]]:
+    def fetch_emails(self, refresh_token: str, criteria_type: str, count: int = 10, hours: int = None) -> List[Dict[str, Any]]:
         """Fetch emails from Gmail based on criteria"""
         try:
             # Ensure count is an integer and safe
@@ -117,9 +126,9 @@ class GmailService:
             if count > 100:
                 count = 100
 
-            current_app.logger.info(f"Fetching emails: criteria={criteria_type}, count={count} (type: {type(count)})")
+            current_app.logger.info(f"Fetching emails: criteria={criteria_type}, count={count} (type: {type(count)}), hours={hours}")
             service = self.build_gmail_service(refresh_token)
-            query = self.get_query_for_criteria(criteria_type, count)
+            query = self.get_query_for_criteria(criteria_type, count, hours)
             current_app.logger.info(f"Using Gmail query: '{query}'")
             current_app.logger.info(f"Requesting maxResults: {count}")
             
@@ -578,7 +587,7 @@ class GmailService:
             }
 
 
-def fetch_and_summarize_emails(refresh_token: str, criteria_type: str, count: int = 10) -> List[Dict[str, Any]]:
+def fetch_and_summarize_emails(refresh_token: str, criteria_type: str, count: int = 10, hours: int = None) -> List[Dict[str, Any]]:
     """Main function to fetch and summarize emails"""
     try:
         current_app.logger.info(f"Starting email fetch and summarization process")
@@ -599,10 +608,10 @@ def fetch_and_summarize_emails(refresh_token: str, criteria_type: str, count: in
         if count > 100:
             count = 100
             
-        current_app.logger.info(f"Fetching emails with criteria: {criteria_type}, count: {count}")
+        current_app.logger.info(f"Fetching emails with criteria: {criteria_type}, count: {count}, hours: {hours}")
         
         # Fetch emails
-        emails = gmail_service.fetch_emails(refresh_token, criteria_type, count)
+        emails = gmail_service.fetch_emails(refresh_token, criteria_type, count, hours)
         
         if not emails:
             current_app.logger.info("No emails found to summarize")

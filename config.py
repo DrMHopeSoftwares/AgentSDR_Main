@@ -16,6 +16,13 @@ class Config:
     SMTP_PASS = os.environ.get('SMTP_PASS')
     SMTP_USE_TLS = os.environ.get('SMTP_USE_TLS', 'true').lower() == 'true'
     
+    # Mailjet settings
+    MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
+    MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
+    MAILJET_SENDER_EMAIL = os.environ.get('MAILJET_SENDER_EMAIL')
+    MAILJET_SENDER_NAME = os.environ.get('MAILJET_SENDER_NAME', 'AgentSDR')
+    USE_MAILJET = os.environ.get('USE_MAILJET', 'true').lower() == 'true'
+    
     # Rate limiting
     RATELIMIT_DEFAULT = "200 per day;50 per hour"
     RATELIMIT_STORAGE_URL = "memory://"
