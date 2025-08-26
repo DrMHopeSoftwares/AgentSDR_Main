@@ -664,27 +664,37 @@ function loadCurrentSchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.schedule) {
-            document.getElementById('currentSchedule').classList.remove('hidden');
-            document.getElementById('currentTime').textContent = data.schedule.schedule_time;
-            document.getElementById('currentEmail').textContent = data.schedule.recipient_email;
-            document.getElementById('currentStatus').textContent = data.schedule.is_active ? 'Active' : 'Paused';
-            document.getElementById('lastRun').textContent = data.schedule.last_run_at ? new Date(data.schedule.last_run_at).toLocaleString() : 'Never';
+            const currentSchedule = document.getElementById('currentSchedule');
+            if (currentSchedule) {
+                currentSchedule.classList.remove('hidden');
+                document.getElementById('currentTime').textContent = data.schedule.schedule_time;
+                document.getElementById('currentEmail').textContent = data.schedule.recipient_email;
+                document.getElementById('currentStatus').textContent = data.schedule.is_active ? 'Active' : 'Paused';
+                document.getElementById('lastRun').textContent = data.schedule.last_run_at ? new Date(data.schedule.last_run_at).toLocaleString() : 'Never';
             
-            // Update form fields
-            document.getElementById('scheduleTime').value = data.schedule.schedule_time;
-            document.getElementById('recipientEmail').value = data.schedule.recipient_email;
-            
-            // Update toggle button
-            const toggleBtn = document.getElementById('toggleScheduleBtn');
-            if (data.schedule.is_active) {
-                toggleBtn.textContent = '⏸️ Pause Schedule';
-                toggleBtn.className = 'px-4 py-3 bg-red-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
-            } else {
-                toggleBtn.textContent = '▶️ Activate Schedule';
-                toggleBtn.className = 'px-4 py-3 bg-green-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
+                // Update form fields
+                const scheduleTime = document.getElementById('scheduleTime');
+                const recipientEmail = document.getElementById('recipientEmail');
+                if (scheduleTime) scheduleTime.value = data.schedule.schedule_time;
+                if (recipientEmail) recipientEmail.value = data.schedule.recipient_email;
+                
+                // Update toggle button
+                const toggleBtn = document.getElementById('toggleScheduleBtn');
+                if (toggleBtn) {
+                    if (data.schedule.is_active) {
+                        toggleBtn.textContent = '⏸️ Pause Schedule';
+                        toggleBtn.className = 'px-4 py-3 bg-red-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
+                    } else {
+                        toggleBtn.textContent = '▶️ Activate Schedule';
+                        toggleBtn.className = 'px-4 py-3 bg-green-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105';
+                    }
+                }
             }
         } else {
-            document.getElementById('currentSchedule').classList.add('hidden');
+            const currentSchedule = document.getElementById('currentSchedule');
+            if (currentSchedule) {
+                currentSchedule.classList.add('hidden');
+            }
         }
     })
     .catch(error => {

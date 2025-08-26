@@ -408,11 +408,22 @@ def gmail_auth(org_slug, agent_id):
             return redirect(url_for('orgs.view_agent', org_slug=org_slug, agent_id=agent_id))
 
         # OAuth parameters - use a fixed callback URL
+        # Auto-detect Railway deployment or use BASE_URL
         base_url = os.getenv('BASE_URL')
-        if base_url:
-            redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
-        else:
-            redirect_uri = url_for('orgs.gmail_callback_handler', _external=True)
+        if not base_url:
+            if os.getenv('RAILWAY_ENVIRONMENT'):
+                # Railway deployment - construct URL from Railway environment
+                service_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+                if service_domain:
+                    base_url = f"https://{service_domain}"
+                else:
+                    # Fallback to request host for Railway
+                    base_url = f"{request.scheme}://{request.host}"
+            else:
+                # Local development
+                base_url = 'http://localhost:5000'
+        
+        redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
         current_app.logger.info(f"Gmail OAuth redirect URI: {redirect_uri}")
         current_app.logger.info(f"Request host: {request.host}")
         current_app.logger.info(f"Request scheme: {request.scheme}")
@@ -465,7 +476,22 @@ def gmail_callback(org_slug, agent_id):
         client_id = os.getenv('GMAIL_CLIENT_ID')
         client_secret = os.getenv('GMAIL_CLIENT_SECRET')
 
-        redirect_uri = url_for('orgs.gmail_callback_handler', _external=True)
+        # Auto-detect Railway deployment or use BASE_URL
+        base_url = os.getenv('BASE_URL')
+        if not base_url:
+            if os.getenv('RAILWAY_ENVIRONMENT'):
+                # Railway deployment - construct URL from Railway environment
+                service_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+                if service_domain:
+                    base_url = f"https://{service_domain}"
+                else:
+                    # Fallback to request host for Railway
+                    base_url = f"{request.scheme}://{request.host}"
+            else:
+                # Local development
+                base_url = 'http://localhost:5000'
+        
+        redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
         current_app.logger.info(f"Token exchange redirect URI: {redirect_uri}")
         token_data = {
             'client_id': client_id,
@@ -533,7 +559,22 @@ def gmail_callback_handler():
         client_id = os.getenv('GMAIL_CLIENT_ID')
         client_secret = os.getenv('GMAIL_CLIENT_SECRET')
 
-        redirect_uri = url_for('orgs.gmail_callback_handler', _external=True)
+        # Auto-detect Railway deployment or use BASE_URL
+        base_url = os.getenv('BASE_URL')
+        if not base_url:
+            if os.getenv('RAILWAY_ENVIRONMENT'):
+                # Railway deployment - construct URL from Railway environment
+                service_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+                if service_domain:
+                    base_url = f"https://{service_domain}"
+                else:
+                    # Fallback to request host for Railway
+                    base_url = f"{request.scheme}://{request.host}"
+            else:
+                # Local development
+                base_url = 'http://localhost:5000'
+        
+        redirect_uri = f"{base_url.rstrip('/')}/orgs/gmail/callback"
         current_app.logger.info(f"Main callback redirect URI: {redirect_uri}")
         token_data = {
             'client_id': client_id,
