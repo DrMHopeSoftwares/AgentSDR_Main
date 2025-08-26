@@ -25,7 +25,9 @@
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Read(/c:\\Users\\hope4\\Downloads/**)",
-      "Read(/c:\\Users\\hope4\\Downloads/**)"
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
