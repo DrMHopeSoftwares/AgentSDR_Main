@@ -1,0 +1,519 @@
+{% extends "layout.html" %}
+
+{% block title %}Call Transcripts - {{ organization.name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Call Transcripts</h1>
+                    <p class="mt-2 text-sm text-gray-600">Manage and review call transcripts for {{ organization.name }}</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="processTranscriptBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Process New Transcript
+                    </button>
+                    <button id="refreshBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Calls</dt>
+                                <dd id="totalCalls" class="text-lg font-medium text-gray-900">-</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Synced to HubSpot</dt>
+                                <dd id="syncedCalls" class="text-lg font-medium text-gray-900">-</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Avg Duration</dt>
+                                <dd id="avgDuration" class="text-lg font-medium text-gray-900">-</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Sync Rate</dt>
+                                <dd id="syncRate" class="text-lg font-medium text-gray-900">-</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call History Table -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Call History</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Recent call transcripts and summaries</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex flex-wrap gap-4">
+                    <div>
+                        <label for="statusFilter" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select id="statusFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">All</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="ongoing">Ongoing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="hubspotFilter" class="block text-sm font-medium text-gray-700">HubSpot Sync</label>
+                        <select id="hubspotFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">All</option>
+                            <option value="true">Synced</option>
+                            <option value="false">Not Synced</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dateFilter" class="block text-sm font-medium text-gray-700">Date Range</label>
+                        <select id="dateFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="7">Last 7 days</option>
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="all">All time</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="callsTable" class="divide-y divide-gray-200">
+                <!-- Table content will be loaded here -->
+                <div class="px-4 py-8 text-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p class="mt-2 text-sm text-gray-500">Loading calls...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Process Transcript Modal -->
+<div id="processTranscriptModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Process Call Transcript</h3>
+                <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="processTranscriptForm">
+                <div class="mb-4">
+                    <label for="callId" class="block text-sm font-medium text-gray-700">Bolna Call ID</label>
+                    <input type="text" id="callId" name="callId" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="agentId" class="block text-sm font-medium text-gray-700">Agent ID</label>
+                    <input type="text" id="agentId" name="agentId" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelProcess" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Process
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Call Details Modal -->
+<div id="callDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 mx-auto p-5 border w-4/5 max-w-4xl shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Call Details</h3>
+                <button id="closeDetailsModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="callDetailsContent" class="space-y-6">
+                <!-- Call details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<script>
+const organizationSlug = '{{ organization.slug }}';
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    loadCallHistory();
+    loadSyncStatus();
+    
+    // Event listeners
+    document.getElementById('processTranscriptBtn').addEventListener('click', showProcessModal);
+    document.getElementById('refreshBtn').addEventListener('click', refreshData);
+    document.getElementById('closeModal').addEventListener('click', hideProcessModal);
+    document.getElementById('cancelProcess').addEventListener('click', hideProcessModal);
+    document.getElementById('closeDetailsModal').addEventListener('click', hideDetailsModal);
+    document.getElementById('processTranscriptForm').addEventListener('submit', processTranscript);
+    
+    // Filter event listeners
+    document.getElementById('statusFilter').addEventListener('change', filterCalls);
+    document.getElementById('hubspotFilter').addEventListener('change', filterCalls);
+    document.getElementById('dateFilter').addEventListener('change', filterCalls);
+});
+
+function showProcessModal() {
+    document.getElementById('processTranscriptModal').classList.remove('hidden');
+}
+
+function hideProcessModal() {
+    document.getElementById('processTranscriptModal').classList.add('hidden');
+    document.getElementById('processTranscriptForm').reset();
+}
+
+function hideDetailsModal() {
+    document.getElementById('callDetailsModal').classList.add('hidden');
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `px-4 py-3 rounded-md text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+    toast.textContent = message;
+    
+    document.getElementById('toastContainer').appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
+}
+
+async function processTranscript(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const callId = formData.get('callId');
+    const agentId = formData.get('agentId');
+    
+    try {
+        const response = await fetch(`/${organizationSlug}/calls/process-transcript`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                call_id: callId,
+                agent_id: agentId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Call transcript processed successfully!', 'success');
+            hideProcessModal();
+            refreshData();
+        } else {
+            showToast(`Error: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        showToast('Failed to process transcript. Please try again.', 'error');
+        console.error('Error:', error);
+    }
+}
+
+async function loadCallHistory() {
+    try {
+        const response = await fetch(`/${organizationSlug}/calls/history`);
+        const result = await response.json();
+        
+        if (result.success) {
+            displayCalls(result.data.calls);
+        } else {
+            showToast(`Error loading calls: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        showToast('Failed to load call history.', 'error');
+        console.error('Error:', error);
+    }
+}
+
+async function loadSyncStatus() {
+    try {
+        const response = await fetch(`/${organizationSlug}/calls/sync-status`);
+        const result = await response.json();
+        
+        if (result.success) {
+            updateStats(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading sync status:', error);
+    }
+}
+
+function updateStats(data) {
+    document.getElementById('totalCalls').textContent = data.total_calls;
+    document.getElementById('syncedCalls').textContent = data.synced_calls;
+    document.getElementById('syncRate').textContent = `${data.sync_rate}%`;
+    
+    // Calculate average duration if available
+    const avgDuration = data.calls.length > 0 ? 
+        Math.round(data.calls.reduce((sum, call) => sum + (call.call_duration || 0), 0) / data.calls.length) : 0;
+    document.getElementById('avgDuration').textContent = `${avgDuration}s`;
+}
+
+function displayCalls(calls) {
+    const tableContainer = document.getElementById('callsTable');
+    
+    if (calls.length === 0) {
+        tableContainer.innerHTML = `
+            <div class="px-4 py-8 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No calls found</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by processing your first call transcript.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const callsHTML = calls.map(call => `
+        <div class="px-4 py-4 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-900">
+                            ${call.contact_name || 'Unknown Contact'}
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            ${call.contact_phone || 'No phone'}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-500">
+                        ${call.call_duration ? `${Math.floor(call.call_duration / 60)}:${(call.call_duration % 60).toString().padStart(2, '0')}` : 'N/A'}
+                    </div>
+                    
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        call.hubspot_summary_sent ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }">
+                        ${call.hubspot_summary_sent ? 'Synced' : 'Not Synced'}
+                    </span>
+                    
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        call.call_status === 'completed' ? 'bg-green-100 text-green-800' : 
+                        call.call_status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                    }">
+                        ${call.call_status}
+                    </span>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="viewCallDetails('${call.id}')" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                            View
+                        </button>
+                        ${!call.hubspot_summary_sent ? `
+                            <button onclick="retryHubSpotSync('${call.id}')" class="text-yellow-600 hover:text-yellow-900 text-sm font-medium">
+                                Retry Sync
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    tableContainer.innerHTML = callsHTML;
+}
+
+async function viewCallDetails(callId) {
+    try {
+        const response = await fetch(`/${organizationSlug}/calls/${callId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            displayCallDetails(result.data);
+            document.getElementById('callDetailsModal').classList.remove('hidden');
+        } else {
+            showToast(`Error loading call details: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        showToast('Failed to load call details.', 'error');
+        console.error('Error:', error);
+    }
+}
+
+function displayCallDetails(call) {
+    const content = document.getElementById('callDetailsContent');
+    
+    content.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Call Information</h4>
+                <dl class="space-y-3">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Call ID</dt>
+                        <dd class="text-sm text-gray-900">${call.call_id}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Contact</dt>
+                        <dd class="text-sm text-gray-900">${call.contact_name || 'Unknown'} (${call.contact_phone || 'No phone'})</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Duration</dt>
+                        <dd class="text-sm text-gray-900">${call.call_duration ? `${Math.floor(call.call_duration / 60)}:${(call.call_duration % 60).toString().padStart(2, '0')}` : 'N/A'}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Status</dt>
+                        <dd class="text-sm text-gray-900">${call.call_status}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">HubSpot Sync</dt>
+                        <dd class="text-sm text-gray-900">${call.hubspot_summary_sent ? 'Synced' : 'Not Synced'}</dd>
+                    </div>
+                </dl>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Summary</h4>
+                ${call.call_summaries ? `
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <p class="text-sm text-gray-900">${call.call_summaries.summary_text}</p>
+                        <div class="mt-2 text-xs text-gray-500">
+                            ${call.call_summaries.word_count} words | 
+                            Model: ${call.call_summaries.openai_model_used} | 
+                            Tokens: ${call.call_summaries.openai_tokens_used}
+                        </div>
+                    </div>
+                ` : '<p class="text-sm text-gray-500">No summary available</p>'}
+            </div>
+        </div>
+        
+        ${call.call_transcripts ? `
+            <div class="mt-6">
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Full Transcript</h4>
+                <div class="bg-gray-50 p-4 rounded-md max-h-64 overflow-y-auto">
+                    <p class="text-sm text-gray-900 whitespace-pre-wrap">${call.call_transcripts.transcript_text}</p>
+                </div>
+            </div>
+        ` : ''}
+    `;
+}
+
+async function retryHubSpotSync(callId) {
+    try {
+        const response = await fetch(`/${organizationSlug}/calls/${callId}/retry-hubspot`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Successfully synced with HubSpot!', 'success');
+            refreshData();
+        } else {
+            showToast(`Error: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        showToast('Failed to retry HubSpot sync.', 'error');
+        console.error('Error:', error);
+    }
+}
+
+function filterCalls() {
+    // Implement filtering logic here
+    loadCallHistory();
+}
+
+function refreshData() {
+    loadCallHistory();
+    loadSyncStatus();
+}
+</script>
+{% endblock %}

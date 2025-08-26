@@ -43,6 +43,15 @@ def create_app(config_name=None):
     from agentsdr.main import main_bp
     app.register_blueprint(main_bp)
 
+    # Register call routes
+    try:
+        from agentsdr.orgs.call_routes import call_bp, bolna_bp
+        app.register_blueprint(call_bp)
+        app.register_blueprint(bolna_bp)
+    except Exception as e:
+        # Log the error but don't fail the app startup
+        print(f"Warning: Could not register call routes: {e}")
+
     # Exempt JSON API routes from CSRF where appropriate
     try:
         from agentsdr.orgs.routes import summarize_emails
