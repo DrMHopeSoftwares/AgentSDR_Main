@@ -8,7 +8,7 @@ from datetime import datetime, timezone, timedelta
 from agentsdr.core.supabase_client import get_service_supabase
 from agentsdr.services.gmail_service import fetch_and_summarize_emails
 from agentsdr.core.email import send_email_summary
-from agentsdr.auth.decorators import require_api_key
+# from agentsdr.auth.decorators import require_api_key  # Not needed for now
 
 scheduler_webhook_bp = Blueprint('scheduler_webhook', __name__)
 
