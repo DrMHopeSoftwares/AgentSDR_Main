@@ -67,6 +67,14 @@ def create_app(config_name=None):
         # Log the error but don't fail the app startup
         print(f"Warning: Could not register call routes: {e}")
 
+    # Register call scheduling routes
+    try:
+        from agentsdr.orgs.call_scheduling_routes import call_scheduling_bp
+        app.register_blueprint(call_scheduling_bp, url_prefix='/call-scheduling')
+    except Exception as e:
+        # Log the error but don't fail the app startup
+        print(f"Warning: Could not register call scheduling routes: {e}")
+
     # Exempt JSON API routes from CSRF where appropriate
     try:
         from agentsdr.orgs.routes import summarize_emails

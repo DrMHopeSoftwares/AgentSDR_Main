@@ -12,20 +12,38 @@ class SupabaseManager:
         """Get the Supabase client with user authentication"""
         if not self._client:
             try:
+                # Create client with minimal parameters to avoid proxy issues
                 self._client = create_client(
                     current_app.config['SUPABASE_URL'],
                     current_app.config['SUPABASE_ANON_KEY']
                 )
-            except TypeError as e:
-                if "proxy" in str(e):
-                    # Handle Railway proxy environment variables
-                    current_app.logger.warning(f"Supabase client proxy error, retrying without proxy: {e}")
-                    # Try without any proxy-related kwargs that might be auto-detected
+            except Exception as e:
+                current_app.logger.error(f"Failed to create Supabase client: {e}")
+                # Try alternative approach with environment variable override
+                try:
+                    # Clear any problematic environment variables
+                    old_http_proxy = os.environ.pop('HTTP_PROXY', None)
+                    old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
+                    old_http_proxy = os.environ.pop('http_proxy', None)
+                    old_https_proxy = os.environ.pop('https_proxy', None)
+                    
                     self._client = create_client(
                         current_app.config['SUPABASE_URL'],
                         current_app.config['SUPABASE_ANON_KEY']
                     )
-                else:
+                    
+                    # Restore environment variables
+                    if old_http_proxy:
+                        os.environ['HTTP_PROXY'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['HTTPS_PROXY'] = old_https_proxy
+                    if old_http_proxy:
+                        os.environ['http_proxy'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['https_proxy'] = old_https_proxy
+                        
+                except Exception as alt_e:
+                    current_app.logger.error(f"Alternative client creation also failed: {alt_e}")
                     raise e
         
         # Set auth token if available in session
@@ -42,20 +60,38 @@ class SupabaseManager:
         """Get the Supabase client with service role key (admin access)"""
         if not self._service_client:
             try:
+                # Create service client with minimal parameters
                 self._service_client = create_client(
                     current_app.config['SUPABASE_URL'],
                     current_app.config['SUPABASE_SERVICE_ROLE_KEY']
                 )
-            except TypeError as e:
-                if "proxy" in str(e):
-                    # Handle Railway proxy environment variables
-                    current_app.logger.warning(f"Supabase service client proxy error, retrying without proxy: {e}")
-                    # Try without any proxy-related kwargs that might be auto-detected
+            except Exception as e:
+                current_app.logger.error(f"Failed to create Supabase service client: {e}")
+                # Try alternative approach with environment variable override
+                try:
+                    # Clear any problematic environment variables
+                    old_http_proxy = os.environ.pop('HTTP_PROXY', None)
+                    old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
+                    old_http_proxy = os.environ.pop('http_proxy', None)
+                    old_https_proxy = os.environ.pop('https_proxy', None)
+                    
                     self._service_client = create_client(
                         current_app.config['SUPABASE_URL'],
                         current_app.config['SUPABASE_SERVICE_ROLE_KEY']
                     )
-                else:
+                    
+                    # Restore environment variables
+                    if old_http_proxy:
+                        os.environ['HTTP_PROXY'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['HTTPS_PROXY'] = old_https_proxy
+                    if old_http_proxy:
+                        os.environ['http_proxy'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['https_proxy'] = old_https_proxy
+                        
+                except Exception as alt_e:
+                    current_app.logger.error(f"Alternative service client creation also failed: {alt_e}")
                     raise e
         return self._service_client
     

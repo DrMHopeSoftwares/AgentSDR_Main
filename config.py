@@ -26,6 +26,13 @@ class Config:
     # Bolna API settings
     BOLNA_API_KEY = os.environ.get('BOLNA_API_KEY')
     BOLNA_API_URL = os.environ.get('BOLNA_API_URL', 'https://api.bolna.ai')
+    # Optional explicit settings used by calling services
+    BOLNA_AGENT_ID = os.environ.get('BOLNA_AGENT_ID')
+    BOLNA_FROM_NUMBER = os.environ.get('BOLNA_FROM_NUMBER')
+    # Allow overriding calls path if provider URL differs
+    BOLNA_CALLS_PATH = os.environ.get('BOLNA_CALLS_PATH')
+    # Optional full calls URL (takes precedence). Matches manual call route behavior
+    BOLNA_FULL_CALLS_URL = os.environ.get('BOLNA_FULL_CALLS_URL')
     
     # OpenAI API settings
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
