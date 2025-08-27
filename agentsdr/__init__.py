@@ -15,6 +15,14 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
     
+    # Make config name lowercase to handle Railway's capitalized env vars
+    config_name = config_name.lower()
+    
+    # Fallback to default if config_name not found
+    if config_name not in config:
+        print(f"Warning: Config '{config_name}' not found, using 'development'")
+        config_name = 'development'
+    
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     
