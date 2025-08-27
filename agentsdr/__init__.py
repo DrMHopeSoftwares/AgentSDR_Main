@@ -77,6 +77,10 @@ def create_app(config_name=None):
         csrf.exempt(hubspot_call_contact)
         csrf.exempt(manage_schedule)
         csrf.exempt(toggle_schedule)
+        
+        # Exempt scheduler webhook from CSRF
+        from agentsdr.orgs.scheduler_webhook import trigger_schedules
+        csrf.exempt(trigger_schedules)
     except Exception:
         # If import fails during certain tooling or tests, skip exemption
         pass
