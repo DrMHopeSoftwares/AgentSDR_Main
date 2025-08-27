@@ -39,7 +39,18 @@
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Read(/c:\\Users\\hope4\\Downloads/**)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Bash(timeout:*)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)"
     ],
     "deny": [],
     "ask": []
