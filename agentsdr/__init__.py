@@ -71,5 +71,17 @@ def create_app(config_name=None):
     @login_manager.user_loader
     def load_user(user_id):
         return User.get_by_id(user_id)
+    
+    # Initialize and start the email scheduler service
+    try:
+        from agentsdr.services.scheduler_service import scheduler_service
+        scheduler_service.init_app(app)
+        
+        # Only start scheduler in production or when explicitly enabled
+        if config_name == 'production' or os.environ.get('ENABLE_SCHEDULER', 'false').lower() == 'true':
+            scheduler_service.start()
+            app.logger.info("🚀 Email Scheduler Service started for Railway deployment")
+    except Exception as e:
+        app.logger.error(f"Failed to start scheduler service: {e}")
 
     return app
