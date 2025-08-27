@@ -28,43 +28,59 @@ def calculate_next_run_time(schedule_time, frequency_type, day_of_week=None, day
     
     hour, minute = map(int, schedule_time.split(':'))
     
+    # Convert local time to UTC (assuming IST timezone UTC+5:30)
+    # User enters local time, we need to convert to UTC for storage
+    IST_OFFSET = timedelta(hours=5, minutes=30)
+    
     if frequency_type == 'daily':
-        # Next run is today if time hasn't passed, otherwise tomorrow
-        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-        if next_run <= now:
-            next_run += timedelta(days=1)
+        # Calculate next run in local time first, then convert to UTC
+        now_local = now + IST_OFFSET  # Convert UTC to local
+        next_run_local = now_local.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        
+        if next_run_local <= now_local:
+            next_run_local += timedelta(days=1)
+            
+        # Convert back to UTC for storage
+        next_run = next_run_local - IST_OFFSET
     
     elif frequency_type == 'weekly':
-        # Find the next occurrence of the specified day of week
-        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-        current_weekday = now.weekday() + 1  # Convert to 1=Monday format
+        # Calculate in local time first, then convert to UTC
+        now_local = now + IST_OFFSET
+        next_run_local = now_local.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        current_weekday = now_local.weekday() + 1  # Convert to 1=Monday format
         
         days_until_target = (day_of_week - current_weekday) % 7
-        if days_until_target == 0 and next_run <= now:
+        if days_until_target == 0 and next_run_local <= now_local:
             days_until_target = 7
         
-        next_run += timedelta(days=days_until_target)
+        next_run_local += timedelta(days=days_until_target)
+        # Convert back to UTC
+        next_run = next_run_local - IST_OFFSET
     
     elif frequency_type == 'monthly':
-        # Find the next occurrence of the specified day of month
-        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        # Calculate in local time first, then convert to UTC
+        now_local = now + IST_OFFSET
+        next_run_local = now_local.replace(hour=hour, minute=minute, second=0, microsecond=0)
         
-        if now.day < day_of_month:
+        if now_local.day < day_of_month:
             # This month
-            next_run = next_run.replace(day=day_of_month)
-        elif now.day == day_of_month and next_run > now:
+            next_run_local = next_run_local.replace(day=day_of_month)
+        elif now_local.day == day_of_month and next_run_local > now_local:
             # Today but time hasn't passed
-            next_run = next_run.replace(day=day_of_month)
+            next_run_local = next_run_local.replace(day=day_of_month)
         else:
             # Next month
-            if now.month == 12:
-                next_run = next_run.replace(year=now.year + 1, month=1, day=min(day_of_month, 31))
+            if now_local.month == 12:
+                next_run_local = next_run_local.replace(year=now_local.year + 1, month=1, day=min(day_of_month, 31))
             else:
-                next_month = now.month + 1
+                next_month = now_local.month + 1
                 # Handle months with fewer than 31 days
                 import calendar
-                max_day = calendar.monthrange(now.year, next_month)[1]
-                next_run = next_run.replace(month=next_month, day=min(day_of_month, max_day))
+                max_day = calendar.monthrange(now_local.year, next_month)[1]
+                next_run_local = next_run_local.replace(month=next_month, day=min(day_of_month, max_day))
+        
+        # Convert back to UTC
+        next_run = next_run_local - IST_OFFSET
     
     return next_run
 
