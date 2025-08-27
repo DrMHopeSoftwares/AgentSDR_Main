@@ -1666,4 +1666,82 @@ def bolna_debug(org_slug: str, agent_id: str):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@orgs_bp.route('/<org_slug>/agents/<agent_id>/toggle-state', methods=['POST'])
+@require_org_member('org_slug')
+def toggle_agent_state(org_slug, agent_id):
+    """Toggle agent active/paused state"""
+    try:
+        data = request.get_json()
+        is_active = data.get('is_active', True)
+        agent_type = data.get('agent_type', 'unknown')
+        
+        current_app.logger.info(f"Toggling agent state: org_slug={org_slug}, agent_id={agent_id}, is_active={is_active}")
+        
+        supabase = get_service_supabase()
+        
+        # Get agent first to verify it exists
+        agent_resp = supabase.table('agents').select('*').eq('id', agent_id).execute()
+        if not agent_resp.data:
+            return jsonify({'error': 'Agent not found'}), 404
+            
+        agent = agent_resp.data[0]
+        
+        # Update agent state
+        update_data = {
+            'is_active': is_active,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }
+        
+        result = supabase.table('agents').update(update_data).eq('id', agent_id).execute()
+        
+        if result.data:
+            current_app.logger.info(f"Agent {agent_id} state updated to {'active' if is_active else 'paused'}")
+            
+            # If agent is being paused, also pause any active schedules for email_summarizer
+            if not is_active and agent_type == 'email_summarizer':
+                schedule_result = supabase.table('email_schedules').update({
+                    'is_active': False,
+                    'updated_at': datetime.now(timezone.utc).isoformat()
+                }).eq('agent_id', agent_id).execute()
+                current_app.logger.info(f"Paused email schedules for agent {agent_id}")
+                
+            return jsonify({
+                'success': True,
+                'is_active': is_active,
+                'message': f"Agent {'activated' if is_active else 'paused'} successfully"
+            })
+        else:
+            return jsonify({'error': 'Failed to update agent state'}), 500
+            
+    except Exception as e:
+        current_app.logger.error(f"Error toggling agent state: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@orgs_bp.route('/<org_slug>/agents/<agent_id>/state', methods=['GET'])
+@require_org_member('org_slug')
+def get_agent_state(org_slug, agent_id):
+    """Get current agent state (active/paused)"""
+    try:
+        current_app.logger.info(f"Getting agent state: org_slug={org_slug}, agent_id={agent_id}")
+        
+        supabase = get_service_supabase()
+        
+        # Get agent state
+        agent_resp = supabase.table('agents').select('is_active, agent_type').eq('id', agent_id).execute()
+        if not agent_resp.data:
+            return jsonify({'error': 'Agent not found'}), 404
+            
+        agent = agent_resp.data[0]
+        is_active = agent.get('is_active', True)  # Default to active if not set
+        
+        return jsonify({
+            'success': True,
+            'is_active': is_active,
+            'agent_type': agent.get('agent_type')
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting agent state: {e}")
+        return jsonify({'error': str(e)}), 500
+
 

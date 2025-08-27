@@ -25,6 +25,15 @@
                     <div>
                         <h1 class="text-3xl font-bold text-white">{{ agent.name }}</h1>
                         <p class="text-white/80 text-lg">{{ agent.agent_type.replace('_', ' ').title() }}</p>
+                        <div class="mt-4 mb-2">
+                            <div class="inline-block p-1 rounded-2xl" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);">
+                                <div id="agentStatusBadge" class="inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold shadow-xl transition-all duration-300" 
+                                     style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: 2px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                                    <span class="w-3 h-3 rounded-full mr-3 animate-pulse" style="background: #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);"></span>
+                                    <span class="tracking-wide">Active & Ready</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex space-x-3">
@@ -264,8 +273,13 @@
                             <button onclick="saveSchedule()" class="btn-gradient py-3 px-6 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
                                 💾 Save Schedule
                             </button>
-                            <button onclick="toggleSchedule()" id="toggleScheduleBtn" class="px-6 py-4 bg-gray-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center">
-                                ⏸️ <span class="ml-2 font-bold">PAUSE</span>
+                            <button onclick="toggleSchedule()" id="toggleScheduleBtn" class="px-8 py-5 rounded-2xl font-bold text-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl min-w-[200px] flex items-center justify-center border-3 transform shadow-lg"
+                                    style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #b91c1c; color: white; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">
+                                <div class="flex flex-col items-center">
+                                    <div class="text-2xl mb-1">🔴</div>
+                                    <div class="text-sm font-bold tracking-wider">INACTIVE</div>
+                                    <div class="text-xs opacity-90 mt-0.5">Click to activate</div>
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -835,6 +849,8 @@ function toggleSchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Update the status badge based on schedule status
+            updateStatusBadge(data.is_active);
             showToast(data.is_active ? 'Schedule activated!' : 'Schedule paused!', 'success');
             loadCurrentSchedule();
         } else {
@@ -859,6 +875,9 @@ function loadCurrentSchedule() {
                 document.getElementById('currentEmail').textContent = data.schedule.recipient_email;
                 document.getElementById('currentStatus').textContent = data.schedule.is_active ? 'Active' : 'Paused';
                 document.getElementById('lastRun').textContent = data.schedule.last_run_at ? new Date(data.schedule.last_run_at).toLocaleString() : 'Never';
+                
+                // Update the status badge based on schedule status
+                updateStatusBadge(data.schedule.is_active);
             
                 // Update form fields
                 const scheduleTime = document.getElementById('scheduleTime');
@@ -870,11 +889,33 @@ function loadCurrentSchedule() {
                 const toggleBtn = document.getElementById('toggleScheduleBtn');
                 if (toggleBtn) {
                     if (data.schedule.is_active) {
-                        toggleBtn.innerHTML = '⏸️ <span class="ml-2 font-bold">PAUSE</span>';
-                        toggleBtn.className = 'px-6 py-4 bg-red-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center';
+                        // ACTIVE state - working and sending emails
+                        toggleBtn.innerHTML = `
+                            <div class="flex flex-col items-center">
+                                <div class="text-2xl mb-1">🟢</div>
+                                <div class="text-sm font-bold tracking-wider">ACTIVE</div>
+                                <div class="text-xs opacity-90 mt-0.5">Daily emails sending</div>
+                            </div>
+                        `;
+                        toggleBtn.className = 'px-8 py-5 rounded-2xl font-bold text-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl min-w-[200px] flex items-center justify-center border-3 transform shadow-lg';
+                        toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                        toggleBtn.style.borderColor = '#047857';
+                        toggleBtn.style.color = 'white';
+                        toggleBtn.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
                     } else {
-                        toggleBtn.innerHTML = '▶️ <span class="ml-2 font-bold">ACTIVE</span>';
-                        toggleBtn.className = 'px-6 py-4 bg-green-600 text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 min-w-[180px] flex items-center justify-center';
+                        // INACTIVE state - paused and not sending emails
+                        toggleBtn.innerHTML = `
+                            <div class="flex flex-col items-center">
+                                <div class="text-2xl mb-1">🔴</div>
+                                <div class="text-sm font-bold tracking-wider">INACTIVE</div>
+                                <div class="text-xs opacity-90 mt-0.5">Click to activate</div>
+                            </div>
+                        `;
+                        toggleBtn.className = 'px-8 py-5 rounded-2xl font-bold text-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl min-w-[200px] flex items-center justify-center border-3 transform shadow-lg';
+                        toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                        toggleBtn.style.borderColor = '#b91c1c';
+                        toggleBtn.style.color = 'white';
+                        toggleBtn.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
                     }
                 }
             }
@@ -883,6 +924,8 @@ function loadCurrentSchedule() {
             if (currentSchedule) {
                 currentSchedule.classList.add('hidden');
             }
+            // If no schedule exists, set status badge to active by default
+            updateStatusBadge(true);
         }
     })
     .catch(error => {
@@ -890,11 +933,146 @@ function loadCurrentSchedule() {
     });
 }
 
+// Agent State Management
+let agentState = {
+    isActive: true, // Default to active
+    isLoading: false
+};
+
+function toggleAgentState() {
+    if (agentState.isLoading) return;
+    
+    agentState.isLoading = true;
+    updateToggleButton(agentState.isActive, true); // Show loading state
+    
+    const newState = !agentState.isActive;
+    
+    // Make API call to update agent state
+    fetch(`/orgs/{{ organization.slug }}/agents/{{ agent.id }}/toggle-state`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        },
+        body: JSON.stringify({ 
+            is_active: newState,
+            agent_type: '{{ agent.agent_type }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            agentState.isActive = newState;
+            updateToggleButton(agentState.isActive, false);
+            updateStatusBadge(agentState.isActive);
+            showToast(
+                agentState.isActive ? 'Agent activated! Ready to work.' : 'Agent paused. No triggers will fire.',
+                agentState.isActive ? 'success' : 'warning'
+            );
+        } else {
+            throw new Error(data.error || 'Failed to toggle agent state');
+        }
+    })
+    .catch(error => {
+        console.error('Error toggling agent state:', error);
+        showToast(`Failed to ${newState ? 'activate' : 'pause'} agent: ${error.message}`, 'error');
+        // Restore previous state on error
+        updateToggleButton(agentState.isActive, false);
+    })
+    .finally(() => {
+        agentState.isLoading = false;
+    });
+}
+
+function updateToggleButton(isActive, isLoading = false) {
+    const toggleBtn = document.getElementById('agentToggleBtn');
+    if (!toggleBtn) return;
+    
+    if (isLoading) {
+        toggleBtn.innerHTML = `
+            <div class="flex flex-col items-center">
+                <div class="text-xl mb-1">
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                <div class="text-sm font-bold tracking-wider">UPDATING...</div>
+            </div>
+        `;
+        toggleBtn.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+        toggleBtn.style.borderColor = '#374151';
+        return;
+    }
+    
+    if (isActive) {
+        // ACTIVE state - green gradient similar to reference image
+        toggleBtn.innerHTML = `
+            <div class="flex flex-col items-center">
+                <div class="text-xl mb-1">🟢</div>
+                <div class="text-sm font-bold tracking-wider">ACTIVE</div>
+                <div class="text-xs opacity-90 mt-0.5">Agent Working</div>
+            </div>
+        `;
+        toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        toggleBtn.style.borderColor = '#047857';
+        toggleBtn.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.4)';
+    } else {
+        // PAUSED state - red gradient similar to reference image
+        toggleBtn.innerHTML = `
+            <div class="flex flex-col items-center">
+                <div class="text-xl mb-1">🔴</div>
+                <div class="text-sm font-bold tracking-wider">PAUSED</div>
+                <div class="text-xs opacity-90 mt-0.5">Click to Activate</div>
+            </div>
+        `;
+        toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        toggleBtn.style.borderColor = '#b91c1c';
+        toggleBtn.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.4)';
+    }
+}
+
+function updateStatusBadge(isActive) {
+    const statusBadge = document.getElementById('agentStatusBadge');
+    if (!statusBadge) return;
+    
+    console.log('Updating status badge to:', isActive ? 'Active' : 'Paused'); // Debug log
+    
+    if (isActive) {
+        // Green status - Active with modern design and better padding
+        statusBadge.className = 'inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold shadow-xl transition-all duration-300';
+        statusBadge.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        statusBadge.style.color = 'white';
+        statusBadge.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+        statusBadge.style.backdropFilter = 'blur(10px)';
+        statusBadge.innerHTML = `
+            <span class="w-3 h-3 rounded-full mr-3 animate-pulse" style="background: #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);"></span>
+            <span class="tracking-wide">Active & Ready</span>
+        `;
+    } else {
+        // Red status - Paused with modern design and better padding
+        statusBadge.className = 'inline-flex items-center px-6 py-3 rounded-xl text-sm font-bold shadow-xl transition-all duration-300';
+        statusBadge.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        statusBadge.style.color = 'white';
+        statusBadge.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+        statusBadge.style.backdropFilter = 'blur(10px)';
+        statusBadge.innerHTML = `
+            <span class="w-3 h-3 rounded-full mr-3" style="background: #ffffff; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);"></span>
+            <span class="tracking-wide">Paused</span>
+        `;
+    }
+}
+
+// Agent state is now managed by the schedule status
+
 // Load current schedule on page load (only for email summarizer agents)
 document.addEventListener('DOMContentLoaded', () => {
     // Only load schedule for email summarizer agents
     if (document.querySelector('[data-agent-type="email_summarizer"]')) {
         loadCurrentSchedule();
+    } else {
+        // For non-email agents, default to active status
+        updateStatusBadge(true);
     }
 });
 </script>

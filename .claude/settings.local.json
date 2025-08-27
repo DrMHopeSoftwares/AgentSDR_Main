@@ -27,7 +27,19 @@
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Read(/c:\\Users\\hope4\\Downloads/**)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/C:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Read(/c:\\Users\\hope4\\Downloads/**)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

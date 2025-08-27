@@ -84,6 +84,12 @@ def execute_schedule(schedule):
         
         agent = agent_resp.data[0]
         
+        # Check if agent is active
+        is_active = agent.get('is_active', True)  # Default to True for backward compatibility
+        if not is_active:
+            print(f"Agent {schedule['agent_id']} is paused - skipping execution")
+            return False
+        
         # Get Gmail refresh token from agent config
         config = agent.get('config', {})
         refresh_token = config.get('gmail_refresh_token')
