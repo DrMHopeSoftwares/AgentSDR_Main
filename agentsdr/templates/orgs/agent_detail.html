@@ -825,6 +825,10 @@ function saveSchedule() {
     .then(data => {
         if (data.success) {
             showToast('Schedule saved successfully!', 'success');
+            // Update status badge with agent status
+            if (data.agent_is_active !== undefined) {
+                updateStatusBadge(data.agent_is_active);
+            }
             loadCurrentSchedule();
         } else {
             showToast(data.error || 'Failed to save schedule', 'error');
@@ -873,11 +877,11 @@ function loadCurrentSchedule() {
                 currentSchedule.classList.remove('hidden');
                 document.getElementById('currentTime').textContent = data.schedule.schedule_time;
                 document.getElementById('currentEmail').textContent = data.schedule.recipient_email;
-                document.getElementById('currentStatus').textContent = data.schedule.is_active ? 'Active' : 'Paused';
+                document.getElementById('currentStatus').textContent = data.agent_is_active ? 'Active' : 'Paused';
                 document.getElementById('lastRun').textContent = data.schedule.last_run_at ? new Date(data.schedule.last_run_at).toLocaleString() : 'Never';
                 
-                // Update the status badge based on schedule status
-                updateStatusBadge(data.schedule.is_active);
+                // Update the status badge based on agent status
+                updateStatusBadge(data.agent_is_active);
             
                 // Update form fields
                 const scheduleTime = document.getElementById('scheduleTime');
@@ -888,7 +892,7 @@ function loadCurrentSchedule() {
                 // Update toggle button
                 const toggleBtn = document.getElementById('toggleScheduleBtn');
                 if (toggleBtn) {
-                    if (data.schedule.is_active) {
+                    if (data.agent_is_active) {
                         // ACTIVE state - working and sending emails
                         toggleBtn.innerHTML = `
                             <div class="flex flex-col items-center">

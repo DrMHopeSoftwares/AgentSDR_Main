@@ -940,9 +940,14 @@ def manage_schedule(org_slug, agent_id):
                 schedule = schedule_resp.data[0] if schedule_resp.data else None
                 current_app.logger.info(f"Retrieved schedule: {schedule}")
                 
+                # Get the agent's is_active status to return it
+                agent_resp = supabase.table('agents').select('is_active').eq('id', agent_id).execute()
+                agent_is_active = agent_resp.data[0]['is_active'] if agent_resp.data else False
+                
                 return jsonify({
                     'success': True,
-                    'schedule': schedule
+                    'schedule': schedule,
+                    'agent_is_active': agent_is_active
                 })
             except Exception as e:
                 current_app.logger.error(f"Error getting schedule: {e}")
@@ -1036,9 +1041,14 @@ def manage_schedule(org_slug, agent_id):
                     result = supabase.table('agent_schedules').insert(schedule_data).execute()
                     current_app.logger.info(f"Insert result: {result}")
                 
+                # Get the agent's is_active status to return it
+                agent_resp = supabase.table('agents').select('is_active').eq('id', agent_id).execute()
+                agent_is_active = agent_resp.data[0]['is_active'] if agent_resp.data else False
+                
                 return jsonify({
                     'success': True,
-                    'message': 'Schedule saved successfully'
+                    'message': 'Schedule saved successfully',
+                    'agent_is_active': agent_is_active
                 })
                 
             except Exception as e:
@@ -1053,7 +1063,7 @@ def manage_schedule(org_slug, agent_id):
 @orgs_bp.route('/<org_slug>/agents/<agent_id>/schedule/toggle', methods=['POST'])
 @require_org_member('org_slug')
 def toggle_schedule(org_slug, agent_id):
-    """Toggle schedule active/inactive"""
+    """Toggle agent active/inactive"""
     try:
         supabase = get_service_supabase()
 
@@ -1063,29 +1073,29 @@ def toggle_schedule(org_slug, agent_id):
             return jsonify({'error': 'Organization not found'}), 404
         organization = org_resp.data[0]
 
-        # Get current schedule
-        schedule_resp = supabase.table('agent_schedules').select('*').eq('agent_id', agent_id).limit(1).execute()
-        if not schedule_resp.data:
-            return jsonify({'error': 'No schedule found for this agent'}), 404
+        # Get current agent
+        agent_resp = supabase.table('agents').select('is_active').eq('id', agent_id).execute()
+        if not agent_resp.data:
+            return jsonify({'error': 'Agent not found'}), 404
         
-        schedule = schedule_resp.data[0]
-        new_status = not schedule['is_active']
+        agent = agent_resp.data[0]
+        new_status = not agent['is_active']
         
-        # Update schedule status
-        supabase.table('agent_schedules').update({
+        # Update agent status
+        supabase.table('agents').update({
             'is_active': new_status,
             'updated_at': datetime.now(timezone.utc).isoformat()
-        }).eq('id', schedule['id']).execute()
+        }).eq('id', agent_id).execute()
         
         return jsonify({
             'success': True,
             'is_active': new_status,
-            'message': f"Schedule {'activated' if new_status else 'paused'}"
+            'message': f"Agent {'activated' if new_status else 'paused'}"
         })
     
     except Exception as e:
-        current_app.logger.error(f"Error toggling schedule: {e}")
-        return jsonify({'error': 'Failed to toggle schedule'}), 500
+        current_app.logger.error(f"Error toggling agent: {e}")
+        return jsonify({'error': 'Failed to toggle agent'}), 500
 
 
 @orgs_bp.route('/<org_slug>/agents/<agent_id>', methods=['DELETE'])

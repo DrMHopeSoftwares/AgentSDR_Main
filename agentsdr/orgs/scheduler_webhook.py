@@ -31,8 +31,8 @@ def trigger_schedules():
         supabase = get_service_supabase()
         now = datetime.now(timezone.utc)
         
-        # Get all active schedules that are due
-        response = supabase.table('agent_schedules').select('*').eq('is_active', True).execute()
+        # Get all schedules (we'll check agent status individually)
+        response = supabase.table('agent_schedules').select('*').execute()
         
         executed_count = 0
         for schedule in response.data:
