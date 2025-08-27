@@ -259,3 +259,175 @@ class HubSpotService:
         except Exception as e:
             logger.error(f"Unexpected error creating custom property: {e}")
             return False
+    
+    def get_contact_checkup_date(self, contact_id: str) -> Optional[datetime]:
+        """
+        Get the last check-up date for a HubSpot contact
+        
+        Args:
+            contact_id: HubSpot contact ID
+            
+        Returns:
+            Last check-up date as datetime or None if not found
+        """
+        try:
+            headers = {
+                'Authorization': f'Bearer {self.api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Try different property names for check-up date
+            checkup_properties = [
+                'check_up_date',
+                'last_checkup_date', 
+                'last_check_up_date',
+                'checkup_date',
+                'last_visit_date',
+                'last_appointment_date'
+            ]
+            
+            url = f"{self.api_url}/crm/v3/objects/contacts/{contact_id}"
+            params = {
+                'properties': ','.join(checkup_properties)
+            }
+            
+            response = requests.get(url, headers=headers, params=params, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                properties = data.get('properties', {})
+                
+                # Find the first available check-up date property
+                for prop in checkup_properties:
+                    if prop in properties and properties[prop]:
+                        try:
+                            # Parse the date (HubSpot returns ISO format)
+                            checkup_date = datetime.fromisoformat(properties[prop].replace('Z', '+00:00'))
+                            logger.info(f"Found check-up date for contact {contact_id}: {checkup_date}")
+                            return checkup_date
+                        except ValueError:
+                            logger.warning(f"Invalid date format for {prop}: {properties[prop]}")
+                            continue
+                
+                logger.info(f"No check-up date found for contact {contact_id}")
+                return None
+            else:
+                logger.error(f"Failed to get contact {contact_id}. Status: {response.status_code}")
+                return None
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request error getting contact check-up date: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error getting contact check-up date: {e}")
+            return None
+    
+    def update_contact_checkup_date(self, contact_id: str, checkup_date: datetime) -> bool:
+        """
+        Update the check-up date for a HubSpot contact
+        
+        Args:
+            contact_id: HubSpot contact ID
+            checkup_date: New check-up date
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            headers = {
+                'Authorization': f'Bearer {self.api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            url = f"{self.api_url}/crm/v3/objects/contacts/{contact_id}"
+            
+            # Try to update the primary check-up date property
+            payload = {
+                "properties": {
+                    "check_up_date": checkup_date.isoformat()
+                }
+            }
+            
+            response = requests.patch(url, headers=headers, json=payload, timeout=30)
+            
+            if response.status_code == 200:
+                logger.info(f"Updated check-up date for contact {contact_id} to {checkup_date}")
+                return True
+            else:
+                logger.error(f"Failed to update check-up date for contact {contact_id}. Status: {response.status_code}")
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request error updating contact check-up date: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error updating contact check-up date: {e}")
+            return False
+    
+    def get_contacts_needing_followup(self, days_threshold: int = 5) -> List[Dict[str, Any]]:
+        """
+        Get contacts that need follow-up based on check-up date threshold
+        
+        Args:
+            days_threshold: Number of days after last check-up to trigger follow-up
+            
+        Returns:
+            List of contacts needing follow-up
+        """
+        try:
+            headers = {
+                'Authorization': f'Bearer {self.api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            # Get all contacts with check-up date properties
+            url = f"{self.api_url}/crm/v3/objects/contacts"
+            params = {
+                'properties': 'id,firstname,lastname,email,phone,check_up_date,last_checkup_date',
+                'limit': 100  # Adjust based on your needs
+            }
+            
+            response = requests.get(url, headers=headers, params=params, timeout=30)
+            
+            if response.status_code != 200:
+                logger.error(f"Failed to get contacts. Status: {response.status_code}")
+                return []
+            
+            data = response.json()
+            contacts_needing_followup = []
+            threshold_date = datetime.now().date()
+            
+            for contact in data.get('results', []):
+                properties = contact.get('properties', {})
+                
+                # Check for check-up date
+                checkup_date_str = properties.get('check_up_date') or properties.get('last_checkup_date')
+                
+                if checkup_date_str:
+                    try:
+                        checkup_date = datetime.fromisoformat(checkup_date_str.replace('Z', '+00:00')).date()
+                        days_since_checkup = (threshold_date - checkup_date).days
+                        
+                        if days_since_checkup >= days_threshold:
+                            contacts_needing_followup.append({
+                                'id': contact['id'],
+                                'firstname': properties.get('firstname', ''),
+                                'lastname': properties.get('lastname', ''),
+                                'email': properties.get('email', ''),
+                                'phone': properties.get('phone', ''),
+                                'last_checkup_date': checkup_date_str,
+                                'days_since_checkup': days_since_checkup
+                            })
+                    except ValueError:
+                        logger.warning(f"Invalid date format for contact {contact['id']}: {checkup_date_str}")
+                        continue
+            
+            logger.info(f"Found {len(contacts_needing_followup)} contacts needing follow-up")
+            return contacts_needing_followup
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request error getting contacts needing follow-up: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"Unexpected error getting contacts needing follow-up: {e}")
+            return []
