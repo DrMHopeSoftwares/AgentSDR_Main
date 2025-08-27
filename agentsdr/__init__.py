@@ -50,6 +50,13 @@ def create_app(config_name=None):
     # Register main routes
     from agentsdr.main import main_bp
     app.register_blueprint(main_bp)
+    
+    # Register scheduler webhook for external cron services
+    try:
+        from agentsdr.orgs.scheduler_webhook import scheduler_webhook_bp
+        app.register_blueprint(scheduler_webhook_bp, url_prefix='/api')
+    except Exception as e:
+        app.logger.warning(f"Could not register scheduler webhook: {e}")
 
     # Register call routes
     try:
