@@ -1,0 +1,63 @@
+services:
+  # Main Web Service
+  - type: web
+    name: autoaisale
+    env: python
+    region: oregon
+    plan: starter
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 4
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_USE_TLS
+        value: true
+      - key: BASE_URL
+        sync: false
+      - key: INVITATION_EXPIRY_HOURS
+        value: 72
+      - key: MAX_ORGS_PER_USER
+        value: 10
+      - key: MAX_MEMBERS_PER_ORG
+        value: 100
+      - key: RATELIMIT_DEFAULT
+        value: 200 per day;50 per hour
+      - key: RATELIMIT_STORAGE_URL
+        value: memory://
+      - key: GMAIL_CLIENT_ID
+        sync: false
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: HUBSPOT_CLIENT_ID
+        sync: false
+      - key: HUBSPOT_CLIENT_SECRET
+        sync: false
+      - key: HUBSPOT_REDIRECT_URI
+        sync: false
+      - key: HUBSPOT_TOKEN
+        sync: false
+      - key: BOLNA_BASE_URL
+        value: https://api.bolna.ai
+      - key: BOLNA_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.12.0
