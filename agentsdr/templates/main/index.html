@@ -270,10 +270,11 @@
 
             <!-- Right Visual -->
             <div class="hero-visual float-animation">
-                <img src="{{ url_for('static', filename='images/hero-ai-woman.png') }}"
+                <img src="{{ url_for('static', filename='images/hero-ai-woman.png') }}?v=1.2"
                      alt="AI-Powered Sales Automation Platform - Automated Calling and CRM Integration"
                      class="w-full h-auto max-w-lg rounded-2xl shadow-2xl"
-                     loading="eager">
+                     loading="eager"
+                     onerror="this.src='/static/images/hero-ai-woman.png'">
             </div>
         </div>
     </div>
@@ -1092,11 +1093,11 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <a href="{{ url_for('auth.signup') }}" class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-xl hover:bg-blue-700 hover:scale-105 transition-all duration-300">
+            <a href="{{ url_for('auth.signup') }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-xl hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all duration-300">
                 <span class="material-icons mr-2">rocket_launch</span>
                 Start Free 14-Day Trial
             </a>
-            <a href="mailto:sales@agentsdr.com" class="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300">
+            <a href="mailto:sales@agentsdr.com" class="inline-flex items-center justify-center px-8 py-4 bg-gray-100 border-2 border-gray-300 text-gray-900 font-bold rounded-xl shadow-lg hover:bg-gray-200 hover:border-gray-400 transition-all duration-300">
                 <span class="material-icons mr-2">email</span>
                 Contact Sales Team
             </a>

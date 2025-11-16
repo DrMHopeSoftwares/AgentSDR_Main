@@ -23,7 +23,10 @@ def create_app(config_name=None):
         print(f"Warning: Config '{config_name}' not found, using 'development'")
         config_name = 'development'
     
-    app = Flask(__name__)
+    # Configure Flask app with explicit static folder
+    app = Flask(__name__,
+                static_folder='static',
+                static_url_path='/static')
     app.config.from_object(config[config_name])
     
     # Initialize extensions
@@ -98,7 +101,16 @@ def create_app(config_name=None):
     @login_manager.user_loader
     def load_user(user_id):
         return User.get_by_id(user_id)
-    
+
+    # Add version info to all templates
+    from agentsdr.utils.version import get_version, get_version_string
+    @app.context_processor
+    def inject_version():
+        return {
+            'app_version': get_version(),
+            'version_string': get_version_string()
+        }
+
     # Initialize and start the email scheduler service
     try:
         from agentsdr.services.scheduler_service import scheduler_service
