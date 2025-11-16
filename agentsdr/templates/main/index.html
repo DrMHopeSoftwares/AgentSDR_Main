@@ -1,275 +1,1184 @@
 {% extends "layout.html" %}
 
-{% block title %}AgentSDR - Multi-tenant Organization Management{% endblock %}
+{% block title %}AgentSDR - AI-Powered Sales Automation Platform | Automate Calls, Emails & CRM{% endblock %}
+
+{% block extra_head %}
+<!-- SEO Meta Tags -->
+<meta name="description" content="AgentSDR is an AI-powered sales automation platform that streamlines your sales process with automated calls, email management, and seamless CRM integration. Boost productivity by 10x with intelligent sales automation.">
+<meta name="keywords" content="sales automation, AI sales assistant, automated calling, CRM integration, email automation, sales productivity, HubSpot integration, Bolna AI, sales AI, customer success platform, SDR automation, lead generation automation">
+<meta name="author" content="AgentSDR">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agentsdr.com/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://agentsdr.com/">
+<meta property="og:title" content="AgentSDR - AI-Powered Sales Automation Platform">
+<meta property="og:description" content="Transform your sales team with AI-powered automation. Automate calls, manage emails, and sync with your CRM effortlessly. Increase conversions by 300%.">
+<meta property="og:image" content="{{ url_for('static', filename='images/hero-ai-woman.png', _external=True) }}">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://agentsdr.com/">
+<meta name="twitter:title" content="AgentSDR - AI-Powered Sales Automation">
+<meta name="twitter:description" content="Automate your entire sales process with AI. Smart calling, email management, and CRM integration in one platform.">
+<meta name="twitter:image" content="{{ url_for('static', filename='images/hero-ai-woman.png', _external=True) }}">
+
+<!-- Structured Data / Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AgentSDR",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "49",
+    "priceCurrency": "USD",
+    "priceValidUntil": "2025-12-31"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "150"
+  },
+  "description": "AI-powered sales automation platform for automated calls, email management, and CRM integration",
+  "featureList": "Automated Calling, Email Automation, CRM Integration, AI Analytics, Lead Scoring, Multi-Channel Outreach"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "AgentSDR",
+  "url": "https://agentsdr.com",
+  "logo": "https://agentsdr.com/static/images/logo.png",
+  "sameAs": [
+    "https://twitter.com/agentsdr",
+    "https://linkedin.com/company/agentsdr"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-555-AGENT-DR",
+    "contactType": "Sales",
+    "email": "sales@agentsdr.com",
+    "areaServed": "US",
+    "availableLanguage": ["English"]
+  }
+}
+</script>
+{% endblock %}
 
 {% block content %}
-<div class="bg-white">
-    <!-- Enhanced Hero Section with Particles -->
-    <div class="relative overflow-hidden hero-gradient min-h-screen flex items-center">
-        <!-- Animated Background Particles -->
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="particles-container">
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-            </div>
-        </div>
-        
-        <!-- Floating Geometric Shapes -->
-        <div class="absolute inset-0">
-            <div class="floating-shape shape-1"></div>
-            <div class="floating-shape shape-2"></div>
-            <div class="floating-shape shape-3"></div>
-        </div>
+<style>
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
 
-        <div class="max-w-7xl mx-auto relative z-10 w-full">
-            <div class="grid lg:grid-cols-2 gap-12 items-center px-4 sm:px-6 lg:px-8 py-20">
-                <!-- Hero Content -->
-                <div class="text-center lg:text-left">
-                    <div class="hero-content-slide-in">
-                        <h1 class="text-5xl sm:text-6xl lg:text-7xl tracking-tight font-extrabold text-white leading-tight">
-                            <span class="block animate-fade-in-up">Organize your</span>
-                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 animate-fade-in-up" style="animation-delay: 300ms;">business data</span>
-                            <span class="block text-3xl sm:text-4xl lg:text-5xl text-white/80 font-light mt-2 animate-fade-in-up" style="animation-delay: 600ms;">like never before</span>
-                        </h1>
-                        
-                        <p class="mt-6 text-lg sm:text-xl text-white/90 max-w-3xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up" style="animation-delay: 900ms;">
-                            Experience the future of organization management with AgentSDR's powerful multi-tenant platform featuring enterprise-grade security, intelligent automation, and seamless team collaboration.
-                        </p>
-                        
-                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style="animation-delay: 1200ms;">
-                            <a href="{{ url_for('auth.signup') }}" class="group btn-gradient-enhanced pulse-glow px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transform hover:scale-105 hover:-translate-y-1 transition-all duration-300">
-                                <span class="flex items-center justify-center">
-                                    <span class="mr-2">🚀</span>
-                                    Start Free Trial
-                                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
-                                </span>
-                            </a>
-                            <a href="{{ url_for('auth.login') }}" class="px-8 py-4 border-2 border-white/30 text-lg font-semibold rounded-xl text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-white/50">
-                                Sign In
-                            </a>
-                        </div>
+    /* Remove default padding from main content wrapper for full-width hero */
+    main.py-6 {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
 
-                        <!-- Trust Indicators -->
-                        <div class="mt-12 animate-fade-in-up" style="animation-delay: 1500ms;">
-                            <p class="text-white/60 text-sm mb-4">Trusted by teams worldwide</p>
-                            <div class="flex items-center justify-center lg:justify-start space-x-8">
-                                <div class="trust-badge">
-                                    <span class="text-2xl">🔒</span>
-                                    <span class="text-xs text-white/80">Enterprise Security</span>
-                                </div>
-                                <div class="trust-badge">
-                                    <span class="text-2xl">⚡</span>
-                                    <span class="text-xs text-white/80">Lightning Fast</span>
-                                </div>
-                                <div class="trust-badge">
-                                    <span class="text-2xl">🌐</span>
-                                    <span class="text-xs text-white/80">Global Scale</span>
-                                </div>
-                            </div>
-                        </div>
+    main .max-w-7xl {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Deep Blue Gradient Background - Almost Black at Edges */
+    .hero-section {
+        background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 35%, #2563eb 50%, #1e3a8a 65%, #0a1628 100%);
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Smooth animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .delay-100 { animation-delay: 0.1s; opacity: 0; }
+    .delay-200 { animation-delay: 0.2s; opacity: 0; }
+    .delay-300 { animation-delay: 0.3s; opacity: 0; }
+    .delay-400 { animation-delay: 0.4s; opacity: 0; }
+
+    /* Modern button styles */
+    .btn-primary {
+        background: white;
+        color: #1e3a8a;
+        font-weight: 600;
+        padding: 1rem 2.5rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-primary:hover {
+        background: #f0f9ff;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: white;
+        font-weight: 600;
+        padding: 1rem 2.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Hero image with modern styling */
+    .hero-visual {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-visual img {
+        filter: brightness(1.1) contrast(1.05);
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-visual img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .float-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+
+<!-- Floating Navigation -->
+<nav class="fixed top-24 right-8 z-50 hidden lg:block">
+    <div class="bg-white/10 backdrop-blur-md rounded-full px-6 py-3 shadow-lg border border-white/20">
+        <ul class="flex space-x-6 text-sm font-medium">
+            <li><a href="#home" class="text-white hover:text-blue-200 transition-colors">Home</a></li>
+            <li><a href="#features" class="text-white hover:text-blue-200 transition-colors">Features</a></li>
+            <li><a href="#benefits" class="text-white hover:text-blue-200 transition-colors">Benefits</a></li>
+            <li><a href="#how-it-works" class="text-white hover:text-blue-200 transition-colors">How It Works</a></li>
+            <li><a href="#use-cases" class="text-white hover:text-blue-200 transition-colors">Use Cases</a></li>
+            <li><a href="#pricing" class="text-white hover:text-blue-200 transition-colors">Pricing</a></li>
+            <li><a href="#faq" class="text-white hover:text-blue-200 transition-colors">FAQ</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="hero-section">
+    <div class="w-full py-16" style="padding-left: 12rem; padding-right: 12rem;">
+        <div class="grid lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
+            <!-- Left Content -->
+            <div class="space-y-8 pt-8 lg:pt-0" style="margin-left: 3rem;">
+                <h1 class="text-5xl lg:text-6xl font-bold text-white leading-tight animate-fade-in-up">
+                    Automate Your Entire Sales Process with <span class="text-blue-300">AI-Powered Intelligence</span>
+                </h1>
+                <p class="text-xl lg:text-2xl leading-relaxed animate-fade-in-up delay-100" style="color: #dbeafe;">
+                    Transform your sales team's productivity with AgentSDR - the complete AI sales automation platform that handles calls, emails, and CRM updates automatically. Close more deals in less time.
+                </p>
+
+                <!-- Key Benefits List -->
+                <div class="space-y-3 animate-fade-in-up delay-200">
+                    <div class="flex items-center text-white">
+                        <span class="material-icons text-green-400 mr-3">check_circle</span>
+                        <span class="text-lg">10x faster sales outreach with automated AI calling</span>
+                    </div>
+                    <div class="flex items-center text-white">
+                        <span class="material-icons text-green-400 mr-3">check_circle</span>
+                        <span class="text-lg">300% increase in conversion rates with intelligent follow-ups</span>
+                    </div>
+                    <div class="flex items-center text-white">
+                        <span class="material-icons text-green-400 mr-3">check_circle</span>
+                        <span class="text-lg">Seamless CRM integration with HubSpot, Salesforce & more</span>
+                    </div>
+                    <div class="flex items-center text-white">
+                        <span class="material-icons text-green-400 mr-3">check_circle</span>
+                        <span class="text-lg">Zero manual data entry - everything syncs automatically</span>
                     </div>
                 </div>
 
-                <!-- Hero Visual -->
-                <div class="relative lg:h-full flex items-center justify-center animate-fade-in-right" style="animation-delay: 600ms;">
-                    <div class="relative">
-                        <!-- Main Dashboard Mockup -->
-                        <div class="dashboard-mockup transform rotate-3 hover:rotate-0 transition-transform duration-700">
-                            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
-                                <div class="flex items-center space-x-3 mb-4">
-                                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
-                                </div>
-                                <div class="space-y-3">
-                                    <div class="h-4 bg-white/20 rounded animate-pulse"></div>
-                                    <div class="h-4 bg-white/20 rounded w-3/4 animate-pulse" style="animation-delay: 200ms;"></div>
-                                    <div class="h-4 bg-white/20 rounded w-1/2 animate-pulse" style="animation-delay: 400ms;"></div>
-                                </div>
-                                <div class="mt-6 grid grid-cols-2 gap-3">
-                                    <div class="h-16 bg-gradient-to-br from-blue-400/30 to-purple-500/30 rounded-lg"></div>
-                                    <div class="h-16 bg-gradient-to-br from-green-400/30 to-blue-500/30 rounded-lg"></div>
-                                </div>
-                            </div>
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-4 animate-fade-in-up delay-300">
+                    <a href="{{ url_for('auth.signup') }}" class="btn-primary">
+                        <span class="material-icons mr-2">rocket_launch</span>
+                        Start Free Trial
+                    </a>
+                    <a href="#how-it-works" class="btn-secondary">
+                        <span class="material-icons mr-2">play_circle</span>
+                        See How It Works
+                    </a>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="pt-6 animate-fade-in-up delay-400">
+                    <p class="text-white text-sm mb-3">Trusted by 500+ sales teams worldwide</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex -space-x-2">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 border-2 border-white"></div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-400 to-indigo-600 border-2 border-white"></div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 border-2 border-white"></div>
                         </div>
-                        
-                        <!-- Floating Cards -->
-                        <div class="absolute -top-8 -left-8 floating-card bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm">
-                            <div class="text-white/80 text-sm font-medium">📊 Analytics</div>
+                        <div class="text-yellow-300 flex items-center">
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="material-icons">star</span>
+                            <span class="ml-2 text-white font-semibold">4.8/5 (150+ reviews)</span>
                         </div>
-                        <div class="absolute -bottom-6 -right-6 floating-card bg-gradient-to-r from-blue-500/20 to-cyan-500/20 backdrop-blur-sm">
-                            <div class="text-white/80 text-sm font-medium">🔐 Secure</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Visual -->
+            <div class="hero-visual float-animation">
+                <img src="{{ url_for('static', filename='images/hero-ai-woman.png') }}"
+                     alt="AI-Powered Sales Automation Platform - Automated Calling and CRM Integration"
+                     class="w-full h-auto max-w-lg rounded-2xl shadow-2xl"
+                     loading="eager">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-40 bg-white scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Powerful Features for Modern Sales Teams
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Everything you need to automate, optimize, and scale your sales operations - all in one intelligent platform
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1: AI-Powered Automated Calling -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">phone_in_talk</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">AI-Powered Automated Calling</h3>
+                <p class="text-gray-600 mb-4">
+                    Let AI handle your outbound calls automatically. Our intelligent calling system powered by Bolna AI conducts natural conversations, qualifies leads, and schedules appointments 24/7.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Natural language processing for human-like conversations</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Automatic call scheduling based on CRM triggers</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Real-time call transcription and analytics</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Feature 2: Smart Email Automation -->
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">email</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart Email Automation & Summarization</h3>
+                <p class="text-gray-600 mb-4">
+                    AI-powered email management that summarizes your inbox, drafts responses, and keeps you focused on high-priority opportunities. Never miss an important email again.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Daily AI-generated email summaries with action items</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Gmail integration with intelligent inbox prioritization</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Automated follow-up sequences based on engagement</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Feature 3: Seamless CRM Integration -->
+            <div class="bg-gradient-to-br from-green-50 to-teal-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">sync</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Seamless CRM Integration</h3>
+                <p class="text-gray-600 mb-4">
+                    Two-way sync with HubSpot, Salesforce, and major CRM platforms. All your data stays updated across systems automatically without manual data entry.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Real-time bidirectional data synchronization</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Automatic contact creation and updates</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Deal pipeline tracking and stage automation</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Feature 4: Analytics & Insights -->
+            <div class="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-orange-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">analytics</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Advanced Analytics & Insights</h3>
+                <p class="text-gray-600 mb-4">
+                    Get actionable insights from your sales data. Track performance metrics, identify trends, and optimize your sales strategy with AI-powered analytics.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Real-time dashboards with key performance indicators</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Conversion funnel analysis and optimization</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Team performance tracking and leaderboards</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Feature 5: Multi-Channel Outreach -->
+            <div class="bg-gradient-to-br from-cyan-50 to-blue-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-cyan-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">forum</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Multi-Channel Outreach</h3>
+                <p class="text-gray-600 mb-4">
+                    Reach your prospects where they are. Coordinate campaigns across email, phone, SMS, and social media for maximum engagement and conversion.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-cyan-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Unified inbox for all communication channels</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-cyan-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Coordinated multi-touch campaigns</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-cyan-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Channel performance comparison and optimization</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Feature 6: Team Collaboration -->
+            <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-pink-600 rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-icons text-white text-3xl">groups</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Team Collaboration & Management</h3>
+                <p class="text-gray-600 mb-4">
+                    Built for teams. Assign leads, share insights, and collaborate seamlessly with role-based access control and real-time updates.
+                </p>
+                <ul class="space-y-2">
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-pink-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Role-based access and permissions</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-pink-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Lead assignment and round-robin distribution</span>
+                    </li>
+                    <li class="flex items-start text-gray-700">
+                        <span class="material-icons text-pink-600 mr-2 text-sm mt-0.5">check</span>
+                        <span>Internal notes and activity logging</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits / Why Choose Us Section -->
+<section id="benefits" class="py-40 bg-gradient-to-br from-blue-50 to-indigo-50 scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Why Sales Teams Choose AgentSDR
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Join hundreds of high-performing sales teams who've transformed their productivity with AI automation
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="space-y-8">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="material-icons text-white">speed</span>
+                        </div>
+                        <div class="ml-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">10x Faster Outreach</h3>
+                            <p class="text-gray-600">
+                                Automate repetitive tasks and let AI handle initial outreach. Your team focuses only on qualified, ready-to-buy prospects, dramatically increasing productivity.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                            <span class="material-icons text-white">trending_up</span>
+                        </div>
+                        <div class="ml-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">300% Higher Conversion Rates</h3>
+                            <p class="text-gray-600">
+                                AI-powered lead scoring and intelligent follow-ups ensure you're always reaching out at the perfect moment with the perfect message.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                            <span class="material-icons text-white">savings</span>
+                        </div>
+                        <div class="ml-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Save 20+ Hours Per Week</h3>
+                            <p class="text-gray-600">
+                                Eliminate manual data entry, email sorting, and repetitive calls. AgentSDR handles the busywork so your team can focus on closing deals.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center">
+                            <span class="material-icons text-white">psychology</span>
+                        </div>
+                        <div class="ml-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">AI-Driven Intelligence</h3>
+                            <p class="text-gray-600">
+                                Leverage OpenAI and advanced machine learning to understand customer intent, predict buying behavior, and optimize every interaction.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-2xl">
+                <div class="text-center mb-8">
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">Real Results from Real Teams</h3>
+                    <p class="text-gray-600">See the impact AgentSDR makes</p>
+                </div>
+                <div class="space-y-6">
+                    <div class="border-l-4 border-blue-600 pl-6 py-4">
+                        <div class="flex items-center mb-2">
+                            <div class="text-4xl font-bold text-blue-600">10x</div>
+                            <div class="ml-4 text-gray-700">More calls completed per day</div>
+                        </div>
+                    </div>
+                    <div class="border-l-4 border-green-600 pl-6 py-4">
+                        <div class="flex items-center mb-2">
+                            <div class="text-4xl font-bold text-green-600">300%</div>
+                            <div class="ml-4 text-gray-700">Increase in qualified leads</div>
+                        </div>
+                    </div>
+                    <div class="border-l-4 border-purple-600 pl-6 py-4">
+                        <div class="flex items-center mb-2">
+                            <div class="text-4xl font-bold text-purple-600">85%</div>
+                            <div class="ml-4 text-gray-700">Reduction in manual data entry</div>
+                        </div>
+                    </div>
+                    <div class="border-l-4 border-orange-600 pl-6 py-4">
+                        <div class="flex items-center mb-2">
+                            <div class="text-4xl font-bold text-orange-600">$500k+</div>
+                            <div class="ml-4 text-gray-700">Average revenue increase per year</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Features Section -->
-    <div class="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-sm font-medium mb-4">
-                    ✨ Powerful Features
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-40 bg-white scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                How AgentSDR Works - Simple 4-Step Process
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Get up and running in minutes. Our intelligent platform does the heavy lifting for you.
+            </p>
+        </div>
+
+        <div class="relative">
+            <!-- Connection Line -->
+            <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-green-200 transform -translate-y-1/2"></div>
+
+            <div class="grid lg:grid-cols-4 gap-8 relative z-10">
+                <!-- Step 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-4 border-blue-100 hover:border-blue-300 transition-all duration-300">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto text-white text-2xl font-bold">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Connect Your CRM</h3>
+                    <p class="text-gray-600 text-center mb-4">
+                        One-click integration with HubSpot, Salesforce, or any major CRM. Sync your contacts and deals instantly.
+                    </p>
+                    <div class="flex justify-center">
+                        <span class="material-icons text-blue-600 text-5xl">link</span>
+                    </div>
                 </div>
-                <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-                    Everything you need to 
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">succeed</span>
-                </h2>
-                <p class="max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
-                    Built with security, scalability, and ease of use in mind. Our platform grows with your business.
+
+                <!-- Step 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-4 border-purple-100 hover:border-purple-300 transition-all duration-300">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-6 mx-auto text-white text-2xl font-bold">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Configure AI Agent</h3>
+                    <p class="text-gray-600 text-center mb-4">
+                        Customize your AI calling scripts, email templates, and automation rules to match your sales process.
+                    </p>
+                    <div class="flex justify-center">
+                        <span class="material-icons text-purple-600 text-5xl">smart_toy</span>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-4 border-green-100 hover:border-green-300 transition-all duration-300">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-6 mx-auto text-white text-2xl font-bold">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Launch Campaigns</h3>
+                    <p class="text-gray-600 text-center mb-4">
+                        Let AI start reaching out to your leads automatically via calls, emails, and multi-channel sequences.
+                    </p>
+                    <div class="flex justify-center">
+                        <span class="material-icons text-green-600 text-5xl">rocket_launch</span>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-4 border-orange-100 hover:border-orange-300 transition-all duration-300">
+                    <div class="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mb-6 mx-auto text-white text-2xl font-bold">
+                        4
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Close More Deals</h3>
+                    <p class="text-gray-600 text-center mb-4">
+                        Focus on qualified prospects while AI handles the rest. Watch your pipeline grow automatically.
+                    </p>
+                    <div class="flex justify-center">
+                        <span class="material-icons text-orange-600 text-5xl">celebration</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="{{ url_for('auth.signup') }}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                <span class="material-icons mr-2">flash_on</span>
+                Get Started in 5 Minutes
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Use Cases Section -->
+<section id="use-cases" class="py-40 bg-gray-50 scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Perfect for Every Sales Team
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                AgentSDR adapts to your industry and use case with customizable AI automation
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-blue-600 text-5xl mb-4">business</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">B2B SaaS Companies</h3>
+                <p class="text-gray-600 mb-4">
+                    Perfect for SaaS sales teams doing high-volume outbound prospecting. Automate demo bookings and follow-ups.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check</span>
+                        <span>Automated demo scheduling</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check</span>
+                        <span>Product tour follow-ups</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-blue-600 mr-2 text-sm mt-1">check</span>
+                        <span>Trial conversion campaigns</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-green-600 text-5xl mb-4">real_estate_agent</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Real Estate Agencies</h3>
+                <p class="text-gray-600 mb-4">
+                    Automate property showing bookings, follow-ups with potential buyers, and listing notifications.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-1">check</span>
+                        <span>Showing appointment automation</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-1">check</span>
+                        <span>Buyer/seller matching</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-green-600 mr-2 text-sm mt-1">check</span>
+                        <span>New listing notifications</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-purple-600 text-5xl mb-4">storefront</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">E-commerce Businesses</h3>
+                <p class="text-gray-600 mb-4">
+                    Re-engage abandoned carts, upsell to existing customers, and automate customer success outreach.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-1">check</span>
+                        <span>Cart abandonment recovery</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-1">check</span>
+                        <span>Automated upsell campaigns</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-purple-600 mr-2 text-sm mt-1">check</span>
+                        <span>Review request automation</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-orange-600 text-5xl mb-4">school</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Education & Training</h3>
+                <p class="text-gray-600 mb-4">
+                    Automate course enrollment follow-ups, student engagement, and alumni outreach campaigns.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-1">check</span>
+                        <span>Course enrollment automation</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-1">check</span>
+                        <span>Student engagement tracking</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-orange-600 mr-2 text-sm mt-1">check</span>
+                        <span>Alumni networking events</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-red-600 text-5xl mb-4">health_and_safety</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Healthcare Services</h3>
+                <p class="text-gray-600 mb-4">
+                    Appointment reminders, patient follow-ups, and service package promotions - all automated.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-red-600 mr-2 text-sm mt-1">check</span>
+                        <span>Appointment confirmation calls</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-red-600 mr-2 text-sm mt-1">check</span>
+                        <span>Patient care follow-ups</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-red-600 mr-2 text-sm mt-1">check</span>
+                        <span>Service package promotions</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <span class="material-icons text-indigo-600 text-5xl mb-4">support_agent</span>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Customer Success Teams</h3>
+                <p class="text-gray-600 mb-4">
+                    Proactive customer outreach, churn prevention, and expansion revenue opportunities.
+                </p>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="material-icons text-indigo-600 mr-2 text-sm mt-1">check</span>
+                        <span>Health score monitoring</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-indigo-600 mr-2 text-sm mt-1">check</span>
+                        <span>Renewal reminders</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="material-icons text-indigo-600 mr-2 text-sm mt-1">check</span>
+                        <span>Upsell opportunity identification</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-40 bg-white scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Loved by Sales Teams Worldwide
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                See what our customers are saying about their transformation with AgentSDR
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg border border-gray-200">
+                <div class="flex items-center text-yellow-500 mb-4">
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                </div>
+                <p class="text-gray-900 text-lg mb-6">
+                    "AgentSDR transformed our sales process. We went from making 50 calls per week to 500+ with better results. The AI handles everything while we focus on closing."
+                </p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-full"></div>
+                    <div class="ml-4">
+                        <p class="text-gray-900 font-bold">Sarah Johnson</p>
+                        <p class="text-gray-600 text-sm">VP of Sales, TechStart Inc</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg border border-gray-200">
+                <div class="flex items-center text-yellow-500 mb-4">
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                </div>
+                <p class="text-gray-900 text-lg mb-6">
+                    "The ROI was immediate. Within the first month, we saved 80 hours of manual work and increased our pipeline by 200%. Best investment we've made."
+                </p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                    <div class="ml-4">
+                        <p class="text-gray-900 font-bold">Michael Chen</p>
+                        <p class="text-gray-600 text-sm">Sales Director, Growth Labs</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-lg border border-gray-200">
+                <div class="flex items-center text-yellow-500 mb-4">
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                    <span class="material-icons">star</span>
+                </div>
+                <p class="text-gray-900 text-lg mb-6">
+                    "Game changer for our team. The AI calling feature alone pays for itself. Our reps can now focus on what they do best - building relationships."
+                </p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-400 rounded-full"></div>
+                    <div class="ml-4">
+                        <p class="text-gray-900 font-bold">Emily Rodriguez</p>
+                        <p class="text-gray-600 text-sm">Founder, SalesPro Solutions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-40 bg-white scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Simple, Transparent Pricing
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Choose the plan that fits your team size. All plans include 14-day free trial with no credit card required.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Starter Plan -->
+            <div class="bg-white border-2 border-gray-200 p-8 rounded-2xl hover:shadow-2xl transition-all duration-300">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
+                <p class="text-gray-600 mb-6">Perfect for small teams getting started</p>
+                <div class="mb-6">
+                    <span class="text-5xl font-bold text-gray-900">$49</span>
+                    <span class="text-gray-600">/month</span>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Up to 100 AI calls/month
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Email automation
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        HubSpot integration
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Basic analytics
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Email support
+                    </li>
+                </ul>
+                <a href="{{ url_for('auth.signup') }}" class="block text-center bg-gray-900 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-colors">
+                    Start Free Trial
+                </a>
+            </div>
+
+            <!-- Professional Plan (Highlighted) -->
+            <div class="p-8 rounded-2xl shadow-2xl transform scale-105 border-4 border-blue-300" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #1d4ed8 50%, #2563eb 75%, #3b82f6 100%);">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-white">Professional</h3>
+                    <span class="bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold">POPULAR</span>
+                </div>
+                <p class="text-white mb-6" style="opacity: 0.95;">Best for growing sales teams</p>
+                <div class="mb-6">
+                    <span class="text-5xl font-bold text-white">$99</span>
+                    <span class="text-white" style="opacity: 0.95;">/month</span>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        Up to 500 AI calls/month
+                    </li>
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        Advanced email automation
+                    </li>
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        All CRM integrations
+                    </li>
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        Advanced analytics & AI insights
+                    </li>
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        Multi-channel campaigns
+                    </li>
+                    <li class="flex items-center text-white">
+                        <span class="material-icons text-yellow-300 mr-3">check_circle</span>
+                        Priority support
+                    </li>
+                </ul>
+                <a href="{{ url_for('auth.signup') }}" class="block text-center bg-white text-blue-600 py-3 px-6 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
+                    Start Free Trial
+                </a>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="bg-white border-2 border-gray-200 p-8 rounded-2xl hover:shadow-2xl transition-all duration-300">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <p class="text-gray-600 mb-6">For large organizations with custom needs</p>
+                <div class="mb-6">
+                    <span class="text-5xl font-bold text-gray-900">Custom</span>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Unlimited AI calls
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Custom AI training
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Custom integrations
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        Dedicated account manager
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        White-label options
+                    </li>
+                    <li class="flex items-center text-gray-700">
+                        <span class="material-icons text-blue-600 mr-3">check_circle</span>
+                        24/7 premium support
+                    </li>
+                </ul>
+                <a href="#contact" class="block text-center bg-gray-900 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-800 transition-colors">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="py-40 bg-gray-50 scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-4xl mx-auto px-12 sm:px-16 lg:px-24">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Frequently Asked Questions
+            </h2>
+            <p class="text-xl text-gray-600">
+                Everything you need to know about AgentSDR
+            </p>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    How does AI-powered calling work?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Our AI calling system uses Bolna AI and advanced natural language processing to conduct human-like phone conversations. The AI can understand context, answer questions, qualify leads, and schedule appointments based on your custom scripts and rules. All calls are recorded and transcribed for your review.
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                <div class="feature-card group">
-                    <div class="feature-icon bg-gradient-to-br from-blue-500 to-cyan-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Multi-tenant Architecture</h3>
-                    <p class="text-gray-600">Complete data isolation between organizations with secure role-based access control and advanced permissions.</p>
-                </div>
-
-                <div class="feature-card group">
-                    <div class="feature-icon bg-gradient-to-br from-emerald-500 to-teal-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Enterprise Security</h3>
-                    <p class="text-gray-600">Bank-grade security with row-level protection, CSRF prevention, and secure invitation system with token expiry.</p>
-                </div>
-
-                <div class="feature-card group">
-                    <div class="feature-icon bg-gradient-to-br from-purple-500 to-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Lightning Fast</h3>
-                    <p class="text-gray-600">Built with modern technologies for optimal performance and seamless user experience across all devices.</p>
-                </div>
-
-                <div class="feature-card group">
-                    <div class="feature-icon bg-gradient-to-br from-pink-500 to-rose-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Intuitive Design</h3>
-                    <p class="text-gray-600">Clean, modern interface with smooth interactions and intelligent workflows that just make sense.</p>
-                </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    Which CRM systems do you integrate with?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    AgentSDR offers native integrations with HubSpot, Salesforce, Pipedrive, Zoho CRM, and many other major CRM platforms. We also provide API access for custom integrations. All data syncs bidirectionally in real-time.
+                </p>
             </div>
 
-            <!-- CTA Section -->
-            <div class="text-center">
-                <div class="inline-flex flex-col sm:flex-row gap-4">
-                    <a href="{{ url_for('auth.signup') }}" class="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                        Get Started Today
-                        <svg class="inline-block w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                    <a href="#demo" class="px-8 py-4 border-2 border-purple-200 text-purple-700 rounded-xl text-lg font-semibold hover:bg-purple-50 transition-all duration-300">
-                        View Demo
-                    </a>
-                </div>
-                <p class="mt-4 text-sm text-gray-500">No credit card required • Free 14-day trial</p>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    Is there a free trial available?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Yes! All plans include a 14-day free trial with full access to features. No credit card required to start your trial. You can cancel anytime during the trial period without being charged.
+                </p>
             </div>
-        </div>
-    </div>
 
-    <!-- Stats Section -->
-    <div class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div class="stat-item">
-                    <div class="text-4xl font-bold text-purple-600 mb-2 counter" data-target="10000">0</div>
-                    <div class="text-gray-600">Organizations</div>
-                </div>
-                <div class="stat-item">
-                    <div class="text-4xl font-bold text-pink-600 mb-2 counter" data-target="50000">0</div>
-                    <div class="text-gray-600">Active Users</div>
-                </div>
-                <div class="stat-item">
-                    <div class="text-4xl font-bold text-blue-600 mb-2 counter" data-target="99.9">0</div>
-                    <div class="text-gray-600">% Uptime</div>
-                </div>
-                <div class="stat-item">
-                    <div class="text-4xl font-bold text-emerald-600 mb-2 counter" data-target="24">0</div>
-                    <div class="text-gray-600">Support</div>
-                </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    How secure is my data?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Security is our top priority. We use enterprise-grade encryption (AES-256) for data at rest and in transit. All data is stored on Supabase with row-level security. We're SOC 2 Type II compliant and GDPR ready. Your data is never shared with third parties.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    Can I customize the AI calling scripts?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Absolutely! You have full control over your AI agent's conversation flow, responses, and behavior. You can create multiple scripts for different campaigns, A/B test variations, and continuously optimize based on performance data.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    What kind of support do you provide?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Starter plans include email support with 24-hour response time. Professional plans get priority support with live chat. Enterprise customers receive a dedicated account manager, 24/7 phone support, and custom onboarding assistance.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    Can I upgrade or downgrade my plan?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Yes, you can change your plan at any time. When upgrading, you'll get immediate access to new features. When downgrading, changes take effect at your next billing cycle. No penalties or hidden fees.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <span class="material-icons text-blue-600 mr-3">help_outline</span>
+                    How long does it take to get started?
+                </h3>
+                <p class="text-gray-600 ml-11">
+                    Most teams are up and running within 5-10 minutes. Simply connect your CRM, configure your AI agent settings, and launch your first campaign. We provide guided onboarding and template libraries to help you get started quickly.
+                </p>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<script>
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+<!-- Contact / CTA Section -->
+<section id="contact" class="py-40 bg-white scroll-mt-20" style="margin-top: 100px;">
+    <div class="max-w-4xl mx-auto px-12 sm:px-16 lg:px-24 text-center">
+        <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            Ready to Transform Your Sales Process?
+        </h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Join hundreds of successful sales teams using AgentSDR to automate their outreach and close more deals. Start your free trial today - no credit card required.
+        </p>
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animate-in');
-        }
-    });
-}, observerOptions);
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <a href="{{ url_for('auth.signup') }}" class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-xl hover:bg-blue-700 hover:scale-105 transition-all duration-300">
+                <span class="material-icons mr-2">rocket_launch</span>
+                Start Free 14-Day Trial
+            </a>
+            <a href="mailto:sales@agentsdr.com" class="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300">
+                <span class="material-icons mr-2">email</span>
+                Contact Sales Team
+            </a>
+        </div>
 
-// Observe all feature cards
-document.querySelectorAll('.feature-card').forEach(card => {
-    observer.observe(card);
-});
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
+                <span class="material-icons text-5xl mb-3 text-blue-600">email</span>
+                <h3 class="font-bold mb-2 text-gray-900">Email Us</h3>
+                <p class="text-gray-600">sales@agentsdr.com</p>
+                <p class="text-gray-600">support@agentsdr.com</p>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
+                <span class="material-icons text-5xl mb-3 text-blue-600">phone</span>
+                <h3 class="font-bold mb-2 text-gray-900">Call Us</h3>
+                <p class="text-gray-600">+1 (555) AGENT-DR</p>
+                <p class="text-gray-600 text-sm">Mon-Fri 9am-6pm EST</p>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
+                <span class="material-icons text-5xl mb-3 text-blue-600">location_on</span>
+                <h3 class="font-bold mb-2 text-gray-900">Visit Us</h3>
+                <p class="text-gray-600">123 Innovation Drive</p>
+                <p class="text-gray-600">San Francisco, CA 94105</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-// Counter animation
-function animateCounter(element) {
-    const target = parseInt(element.dataset.target);
-    const duration = 2000;
-    const step = target / (duration / 16);
-    let current = 0;
+<!-- Footer with Version -->
+<footer class="bg-gray-900 border-t border-gray-800 py-8">
+    <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 xl:px-32 2xl:px-40">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4">AgentSDR</h3>
+                <p class="text-gray-400 text-sm">
+                    AI-powered sales automation platform trusted by teams worldwide.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Product</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+                    <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+                    <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
+                    <li><a href="#use-cases" class="hover:text-white transition-colors">Use Cases</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Company</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                    <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Legal</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Security</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">GDPR</a></li>
+                </ul>
+            </div>
+        </div>
 
-    const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-            current = target;
-            clearInterval(timer);
-        }
-        
-        if (target === 99.9) {
-            element.textContent = current.toFixed(1);
-        } else {
-            element.textContent = Math.floor(current).toLocaleString();
-        }
-    }, 16);
-}
-
-// Observe counters
-document.querySelectorAll('.counter').forEach(counter => {
-    const counterObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateCounter(entry.target);
-                counterObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    counterObserver.observe(counter);
-});
-</script>
+        <div class="border-t border-gray-800 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center text-xs text-gray-500 mb-4 md:mb-0">
+                    <span>{{ app_version.project_name }} v{{ app_version.version }}</span>
+                    <span class="mx-2">•</span>
+                    <span>Last Updated: {{ app_version.date }}</span>
+                    <span class="mx-2">•</span>
+                    <span>Build: {{ app_version.hash }}</span>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    © 2025 AgentSDR. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 
 {% endblock %}
